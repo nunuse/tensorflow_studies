@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex
+    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+                        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+ <sitemap>
+  <loc>https://github.com/necromuralist/tensorflow_studies/categories/bibliography-tensorflow.xml</loc>
+  <lastmod>2018-05-26T20:59:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>https://github.com/necromuralist/tensorflow_studies/categories/cat_machinelearning.xml</loc>
+  <lastmod>2018-05-26T22:44:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>https://github.com/necromuralist/tensorflow_studies/categories/cat_reference.xml</loc>
+  <lastmod>2018-05-26T20:59:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>https://github.com/necromuralist/tensorflow_studies/categories/cat_tensorflow.xml</loc>
+  <lastmod>2018-05-29T00:46:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>https://github.com/necromuralist/tensorflow_studies/categories/history-machinelearning-dummies.xml</loc>
+  <lastmod>2018-05-26T22:44:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>https://github.com/necromuralist/tensorflow_studies/categories/tensorflow-dummies.xml</loc>
+  <lastmod>2018-05-29T00:46:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>https://github.com/necromuralist/tensorflow_studies/rss.xml</loc>
+  <lastmod>2018-05-29T00:47:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>https://github.com/necromuralist/tensorflow_studies/sitemap.xml</loc>
+  <lastmod>2018-05-29T00:47:00Z</lastmod>
+ </sitemap>
+</sitemapindex>

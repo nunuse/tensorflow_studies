@@ -1,0 +1,322 @@
+#+BEGIN_COMMENT
+.. title: How do you create a tensor?
+.. slug: how-do-you-create-a-tensor
+.. date: 2018-05-26 18:28:55 UTC-07:00
+.. tags: tensorflow dummies
+.. category: TensorFlow
+.. link: 
+.. description: How to create and transform tensors.
+.. type: text
+#+END_COMMENT
+
+These are notes from *TensorFlow for Dummies* and the [[https://www.tensorflow.org/api_guides/python/constant_op#Constant_Value_Tensors][tensorflow documentation]].
+
+* What are tensors?
+This is primarily about [[https://www.tensorflow.org/programmers_guide/tensors][tensors]]. Although they have a specific mathematical meeting, when working with them it might be easier just to think of them as arrays. Although the tensors look a lot like [[https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html][numpy]] arrays, because TensorFlow defines all its parts before executing anything in a session, while more traditional python libraries like [[http://www.numpy.org/][numpy]] execute each line, all your operations need to be done through tensorflow's [[https://www.tensorflow.org/api_docs/python/][API]], rather than any other python method.
+
+
+** Okay, so what's a tensor?
+   A tensor is an abstraction that encompasses the things you learned about in Linear Algebra and physics.
+
+   - A tensor with zero dimensions is a *scalar*
+   - A tensor with one dimension is a *vector*
+   - A tensor with two dimensions is a *matrix*
+
+  A *tensorflow* tensor:
+
+  - is an instance of the [[https://www.tensorflow.org/api_docs/python/tf/Tensor][Tensor]] class
+  - can have elements of type float, integer, string, or boolean, and all the elements of a tensor must be of the same type
+  - can be created and operated on using the tensorflow API
+* How do you create tensors?
+** How do you create tensors with values in them?
+   There are various ways to create tensors by calling =tensorflow= functions with values that you specify. I'll list some of the ways to create tensors with pre-specified values. The =Argument= is just the main one you pass in to specify the tensor you want, each of the function has others as well, but they are optional. The =Returned Tensor Values= describes what values are held by the tensor that is returned by the function.
+
+   | =tensorflow= Function | Argument            | Returned Tensor Values                           |
+   |-----------------------+---------------------+--------------------------------------------------|
+   | [[https://www.tensorflow.org/api_docs/python/tf/constant][constant]]              | Value(s)            | the value(s) you gave                            |
+   | [[https://www.tensorflow.org/api_docs/python/tf/zeros][zeros]]                 | Shape               | all zeros                                        |
+   | [[https://www.tensorflow.org/api_docs/python/tf/ones][ones]]                  | Shape               | All ones                                         |
+   | [[https://www.tensorflow.org/api_docs/python/tf/fill][fill]]                  | Shape, Value        | All the given value                              |
+   | [[https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/lin-space][linspace]]              | Start, Stop, Steps  | linearly spaced floats within the given range    |
+   | [[https://www.tensorflow.org/api_docs/python/tf/range][range]]                 | Start, Limit, Delta | range of numbers based on start, stop, and delta |
+
+
+*Some Jargon*
+
+| Term    | Meaning                                     |
+|---------+---------------------------------------------|
+| *rank*  | The number of dimensions of a tensor        |
+| *shape* | The length of each of a tensor's dimensions |
+
+** How do you create a tensor with a constant value or values in it?
+   This is how you would create a tensor whose values never change. These are the arguments =tensorflow.constant= takes.
+
+   | Argument | Description                            |
+   |----------+----------------------------------------|
+   | value    | value or list of values for the tensor |
+   | dtype    | Type of the elements for the tensor    |
+   | shape    | Dimensions of the tensor to create     |
+   | name     | name for the tensor                    |
+
+#+BEGIN_SRC python :session chapter03 :results output :exports both
+print(tensorflow.constant(3))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("Const:0", shape=(), dtype=int32)
+
+Passing in the value and the shape seems unnecessary, but the more specific you are, the more built in error handling you have. To actually raise an error on a mismatch, though, you have to pass in an extra =True= argument to turn on error checking. 
+
+#+BEGIN_SRC python :session chapter03 :results output :exports both
+try:
+    tensorflow.constant([1,3], tensorflow.int16, [3], 'Fail', True)
+except TypeError as error:
+    print(error)
+#+END_SRC
+
+#+RESULTS:
+: Expected Tensor's shape: (3,), got (2,).
+
+Another useful thing about the =shape= argument is that if you pass in a single value and a shape, then it will create a tensor with the given shape and use the value you passed in to populate it. This would create a $3 \times 2$ tensor with 5 for all the values.
+
+#+BEGIN_SRC python :session chapter03 :results output :exports both
+print(tensorflow.constant(5, shape=[3, 2]))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("Const_6:0", shape=(3, 2), dtype=int32)
+
+** How do you create a tensor with only zeros or only ones in it?
+   For the =zeros= and =ones= functions you only have to pass in the shape, but it does have some other arguments.
+
+   | Argument | Description                                 |
+   |----------+---------------------------------------------|
+   | shape    | A list with the shape of the tensor         |
+   | dtype    | The data-type you want the values to have   |
+   | name     | A descriptive name to make debugging easier |
+
+Here's how to create a $5 \times 6$ tensor filled with zeros.
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print(tensorflow.zeros([5, 6]))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("zeros_1:0", shape=(5, 6), dtype=float32)
+
+Here's how to create a tensor with the same shape but filled with ones.
+
+#+BEGIN_SRC python :session chapter03 :results output :exports both
+print(tensorflow.ones([5, 6]))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("ones:0", shape=(5, 6), dtype=float32)
+
+** How do you create a tensor filled with the same value?
+   The =fill= function creates a tensor with all the values and data-types being the same as the value you give it, so there's no =dtype= argument. I'm not sure when this would be preferable to using =constant=, maybe it's just a convenience function
+
+   | Argument | Description                       |
+   |----------+-----------------------------------|
+   | dims     | The shape of the tensor           |
+   | value    | The value to fill the tensor with |
+   | name     | Descriptive name for debugging    |
+
+The *Dummies* book says that =fill= only works with 32-bit floating point numbers, but that doesn't appear to be the case at the momemnt.
+
+#+BEGIN_SRC python :session chapter03 :results output :exports both
+print(tensorflow.fill([5, 6], 5))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("Fill_1:0", shape=(5, 6), dtype=int32)
+
+** How do you create a tensor of evenly spaced numbers?
+   The =linspace= (linear space) function will create a tensor with numbers evenly spaced from some start value to some end value. The start and stop values you give it are always the first and last values in the tensor.
+
+   | Argument | Description                           |
+   |----------+---------------------------------------|
+   | start    | The first number in the sequence      |
+   | stop     | The last number in the sequence       |
+   | num      | The number of numbers in the sequence |
+
+Here's how to create a tensor that represents a sequence from 5 to 13 with 7 numbers in the sequence.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print(tensorflow.linspace(5.0, 13.0, 7))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("LinSpace_12:0", shape=(7,), dtype=float32)
+
+
+Note that the number types are important here. The =start= and =stop= have to be floating point numbers (so use a decmal point) and them =num= has to be an integer (so don't put a decimal point).
+
+#+BEGIN_SRC python :session chapter03 :results output :exports both
+try:
+    tensorflow.linspace(5, 13, 7)
+except TypeError as error:
+    print(error)
+#+END_SRC
+
+#+RESULTS:
+: Value passed to parameter 'start' has DataType int32 not in list of allowed values: bfloat16, float32, float64
+
+** How do you create a tensor with a range of numbers with a specific amount between each step?
+   The =range= function creates a tensor works similarly to [[https://docs.python.org/3.5/library/functions.html#func-range][python's range]], you give a start value, an upper limit value and a step-size (what *tensorflow* calls a delta) and it creates values from the start up to the upper limit (but not including it).
+
+   | Argument | Description                                                  |
+   |----------+--------------------------------------------------------------|
+   | start    | The first number in the range                                |
+   | limit    | The upper bound for the range                                |
+   | delta    | The amount to add to each previous value to create the range |
+   | dtype    | The data-type for the values in the range                    |
+   | name     | A label to make debugging easier                             |
+
+
+This makes a range from 5 to 8 with steps of 2. By default it will use the data-type of the values you pass in, so I'll cast it to a float, just to be different.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print(tensorflow.range(5, 8, 2, dtype=tensorflow.float32, name="Ted"))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("Ted_1:0", shape=(2,), dtype=float32)
+
+* How do you create tensors with random values?
+  Sometimes you want to initialize tensors with random values, like when you initialize a set of weights to train. You could start out with 0's or 1's but often when you don't know what values you want, it's better to start with random numbers. Here are the functions that tensorflow has.
+
+  | Function           | Description                                                                    |
+  |--------------------+--------------------------------------------------------------------------------|
+  | [[https://www.tensorflow.org/api_docs/python/tf/random_normal][=random_normal=]]    | Outputs random values from the [[https://en.wikipedia.org/wiki/Normal_distribution][normal distribution]]                             |
+  | [[https://www.tensorflow.org/api_docs/python/tf/truncated_normal][=truncated_normal=]] | Values from the normal distribution within 2 standard deviations from the mean |
+  | [[https://www.tensorflow.org/api_docs/python/tf/random_uniform][=random_uniform=]]   | Random values from a [[https://en.wikipedia.org/wiki/Uniform_distribution_(continuous)][uniform distribution]]                                      |
+  | [[https://www.tensorflow.org/api_docs/python/tf/random_shuffle][=random_shuffle=]]   | Randomly shuffles a tensor along its first dimension                           |
+  | [[https://www.tensorflow.org/api_docs/python/tf/random_crop][=random_crop=]]      | Randomly crop a tensor to a given size                                         |
+  | [[https://www.tensorflow.org/api_docs/python/tf/multinomial][=multinomial=]]      | Random values from a [[https://en.wikipedia.org/wiki/Multinomial_distribution][multinomial distribution]]                                  |
+  | [[https://www.tensorflow.org/api_docs/python/tf/random_gamma][=random_gamma=]]     | Samples from each of the [[https://en.wikipedia.org/wiki/Gamma_distribution][Gamma distributions]]                                   |
+  | [[https://www.tensorflow.org/api_docs/python/tf/set_random_seed][=set_random_seed=]]  | Sets the graph-level random seed                                               |
+
+** How do you create a tensor with random values that are normally distributed?
+   The =tenorflow.random_normal= function creates a tensor of random value sampled from the normal distribution.
+
+   | Argument | Description                                |
+   |----------+--------------------------------------------|
+   | shape    | The shape of the tensor to create          |
+   | mean     | The center of the distribution             |
+   | stddev   | The standard deviation of the distribution |
+   | dtype    | The data type of the values                |
+   | seed     | A python integer to set the random seed    |
+   | name     | A label for debugging                      |
+
+By default the =random_normal= functions samples from the standard normal distribution (so it has a mean of 0 and a standard deviation of 1). Here's how to create a $3 \times 3$ tensor with values from the standard normal distribution.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print(tensorflow.random_normal([3, 3]))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("random_normal:0", shape=(3, 3), dtype=float32)
+
+If you want a different distribution you can pass in the mean and standard deviation. If you want to make it reproducible by others, you can also pass in the seed, althought the =set_random_seed= function might be better for that.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print(tensorflow.random_normal([3, 3], mean=3, stddev=2, seed=0, name="Bob"))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("Bob:0", shape=(3, 3), dtype=float32)
+
+*** How do you create a tensor with random values sampled from the normal distribution but not unlikely values?
+    Because about [[https://en.wikipedia.org/wiki/68–95–99.7_rule][95% of the area under the curve sits within 2 standard deviation from the mean]], you can have tensorflow truncate the values that are more than 2 standard deviations from the mean so that you won't get those less likely values. This function takes the same arguments as the =random_normal= function (so you can't change the truncation value).
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print(tensorflow.truncated_normal([3, 3], mean=3, stddev=3, seed=0, name="TrunkyMcTrunkface"))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("TrunkyMcTrunkface:0", shape=(3, 3), dtype=float32)
+
+** How do I make this randomness reproducible?
+   If you want to make the random values reproducible (by yourself or others) you can set the random seed using =set_random_seed=. This will set the seed for the entire graph. There are two types of seeds to set - the graph-level seed (set here) that will be shared by all the operations and at the operation-level - by passing in the =seed= argument to =random_normal= for instance. You can use either or both, but I think in most cases you would want to use the =set_random_seed= function unless you have a specific reason not to.
+
+To see this in action, I'll create two random uniform numbers and two random normal numbers.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print("Session 1")
+tensorflow.set_random_seed(0)
+uniform = tensorflow.random_uniform([1])
+normal = tensorflow.random_normal([1])
+
+with tensorflow.Session() as session_1:
+    print(session_1.run(uniform))
+    print(session_1.run(uniform))
+    print(session_1.run(normal))
+    print(session_1.run(normal))
+#+END_SRC
+
+#+RESULTS:
+: Session 1
+: [0.3206401]
+: [0.012326]
+: [1.018752]
+: [-1.0647357]
+
+Now we'll do this again but in a new session. This should restart the random-number generators, giving us the same 'random' numbers.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print("Session 2")
+with tensorflow.Session() as session_2:
+    print(session_2.run(uniform))
+    print(session_2.run(uniform))
+    print(session_2.run(normal))
+    print(session_2.run(normal))
+#+END_SRC
+
+#+RESULTS:
+: Session 2
+: [0.3206401]
+: [0.012326]
+: [1.018752]
+: [-1.0647357]
+
+*** Does setting the seed have to come before creating the tensors?
+    Let's try it and see.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print("Session 3")
+uniform = tensorflow.random_uniform([1])
+normal = tensorflow.random_normal([1])
+
+tensorflow.set_random_seed(0)
+
+with tensorflow.Session() as session_3:
+    print(session_3.run(uniform))
+    print(session_3.run(uniform))
+    print(session_3.run(normal))
+    print(session_3.run(normal))
+#+END_SRC
+
+#+RESULTS:
+: Session 3
+: [0.16354513]
+: [0.8006109]
+: [-0.84182554]
+: [-2.697645]
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print("Session 4")
+with tensorflow.Session() as session_4:
+    print(session_4.run(uniform))
+    print(session_4.run(uniform))
+    print(session_4.run(normal))
+    print(session_4.run(normal))
+#+END_SRC
+
+#+RESULTS:
+: Session 4
+: [0.16354513]
+: [0.8006109]
+: [-0.84182554]
+: [-2.697645]
+
+Since the numbers put out by both sessions are the same, the answer appears to be no. But wait, why does the second set of numbers not match the first? I'm assuming this is because I'm running this in a notebook... I'll have to look into that more. According to [[https://stackoverflow.com/questions/36096386/tensorflow-set-random-seed-not-working][Stack Overflow]] you either have to call =reset_default_graph= or set it at the operation-level (i.e. pass in the seed when creating the tensor). Resetting the default graph didn't seem to work when I tried it, but we'll see, I'm not a researcher so this might not be something for me to deal with right now.

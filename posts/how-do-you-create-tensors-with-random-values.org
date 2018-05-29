@@ -1,0 +1,148 @@
+#+BEGIN_COMMENT
+.. title: How Do You Create Tensors With Random Values?
+.. slug: how-do-you-create-tensors-with-random-values
+.. date: 2018-05-28 17:47:20 UTC-07:00
+.. tags: tensorflow dummies
+.. category: TensorFlow
+.. link: 
+.. description: How to create random Tensors with TensorFlow.
+.. type: text
+#+END_COMMENT
+
+  Sometimes you want to initialize tensors with random values, like when you initialize a set of weights to train. You could start out with 0's or 1's but often when you don't know what values you want, it's better to start with random numbers. Here are the functions that tensorflow has.
+
+  | Function           | Description                                                                    |
+  |--------------------+--------------------------------------------------------------------------------|
+  | [[https://www.tensorflow.org/api_docs/python/tf/random_normal][=random_normal=]]    | Outputs random values from the [[https://en.wikipedia.org/wiki/Normal_distribution][normal distribution]]                             |
+  | [[https://www.tensorflow.org/api_docs/python/tf/truncated_normal][=truncated_normal=]] | Values from the normal distribution within 2 standard deviations from the mean |
+  | [[https://www.tensorflow.org/api_docs/python/tf/random_uniform][=random_uniform=]]   | Random values from a [[https://en.wikipedia.org/wiki/Uniform_distribution_(continuous)][uniform distribution]]                                      |
+  | [[https://www.tensorflow.org/api_docs/python/tf/random_shuffle][=random_shuffle=]]   | Randomly shuffles a tensor along its first dimension                           |
+  | [[https://www.tensorflow.org/api_docs/python/tf/random_crop][=random_crop=]]      | Randomly crop a tensor to a given size                                         |
+  | [[https://www.tensorflow.org/api_docs/python/tf/multinomial][=multinomial=]]      | Random values from a [[https://en.wikipedia.org/wiki/Multinomial_distribution][multinomial distribution]]                                  |
+  | [[https://www.tensorflow.org/api_docs/python/tf/random_gamma][=random_gamma=]]     | Samples from each of the [[https://en.wikipedia.org/wiki/Gamma_distribution][Gamma distributions]]                                   |
+  | [[https://www.tensorflow.org/api_docs/python/tf/set_random_seed][=set_random_seed=]]  | Sets the graph-level random seed                                               |
+
+** How do you create a tensor with random values that are normally distributed?
+   The =tenorflow.random_normal= function creates a tensor of random value sampled from the normal distribution.
+
+   | Argument | Description                                |
+   |----------+--------------------------------------------|
+   | shape    | The shape of the tensor to create          |
+   | mean     | The center of the distribution             |
+   | stddev   | The standard deviation of the distribution |
+   | dtype    | The data type of the values                |
+   | seed     | A python integer to set the random seed    |
+   | name     | A label for debugging                      |
+
+By default the =random_normal= functions samples from the standard normal distribution (so it has a mean of 0 and a standard deviation of 1). Here's how to create a $3 \times 3$ tensor with values from the standard normal distribution.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print(tensorflow.random_normal([3, 3]))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("random_normal:0", shape=(3, 3), dtype=float32)
+
+If you want a different distribution you can pass in the mean and standard deviation. If you want to make it reproducible by others, you can also pass in the seed, althought the =set_random_seed= function might be better for that.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print(tensorflow.random_normal([3, 3], mean=3, stddev=2, seed=0, name="Bob"))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("Bob:0", shape=(3, 3), dtype=float32)
+
+*** How do you create a tensor with random values sampled from the normal distribution but not unlikely values?
+    Because about [[https://en.wikipedia.org/wiki/68–95–99.7_rule][95% of the area under the curve sits within 2 standard deviation from the mean]], you can have tensorflow truncate the values that are more than 2 standard deviations from the mean so that you won't get those less likely values. This function takes the same arguments as the =random_normal= function (so you can't change the truncation value).
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print(tensorflow.truncated_normal([3, 3], mean=3, stddev=3, seed=0, name="TrunkyMcTrunkface"))
+#+END_SRC
+
+#+RESULTS:
+: Tensor("TrunkyMcTrunkface:0", shape=(3, 3), dtype=float32)
+
+** How do I make this randomness reproducible?
+   If you want to make the random values reproducible (by yourself or others) you can set the random seed using =set_random_seed=. This will set the seed for the entire graph. There are two types of seeds to set - the graph-level seed (set here) that will be shared by all the operations and at the operation-level - by passing in the =seed= argument to =random_normal= for instance. You can use either or both, but I think in most cases you would want to use the =set_random_seed= function unless you have a specific reason not to.
+
+To see this in action, I'll create two random uniform numbers and two random normal numbers.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print("Session 1")
+tensorflow.set_random_seed(0)
+uniform = tensorflow.random_uniform([1])
+normal = tensorflow.random_normal([1])
+
+with tensorflow.Session() as session_1:
+    print(session_1.run(uniform))
+    print(session_1.run(uniform))
+    print(session_1.run(normal))
+    print(session_1.run(normal))
+#+END_SRC
+
+#+RESULTS:
+: Session 1
+: [0.3206401]
+: [0.012326]
+: [1.018752]
+: [-1.0647357]
+
+Now we'll do this again but in a new session. This should restart the random-number generators, giving us the same 'random' numbers.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print("Session 2")
+with tensorflow.Session() as session_2:
+    print(session_2.run(uniform))
+    print(session_2.run(uniform))
+    print(session_2.run(normal))
+    print(session_2.run(normal))
+#+END_SRC
+
+#+RESULTS:
+: Session 2
+: [0.3206401]
+: [0.012326]
+: [1.018752]
+: [-1.0647357]
+
+*** Does setting the seed have to come before creating the tensors?
+    Let's try it and see.
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print("Session 3")
+uniform = tensorflow.random_uniform([1])
+normal = tensorflow.random_normal([1])
+
+tensorflow.set_random_seed(0)
+
+with tensorflow.Session() as session_3:
+    print(session_3.run(uniform))
+    print(session_3.run(uniform))
+    print(session_3.run(normal))
+    print(session_3.run(normal))
+#+END_SRC
+
+#+RESULTS:
+: Session 3
+: [0.16354513]
+: [0.8006109]
+: [-0.84182554]
+: [-2.697645]
+
+#+BEGIN_SRC python :session chapter03 :exports both :results output
+print("Session 4")
+with tensorflow.Session() as session_4:
+    print(session_4.run(uniform))
+    print(session_4.run(uniform))
+    print(session_4.run(normal))
+    print(session_4.run(normal))
+#+END_SRC
+
+#+RESULTS:
+: Session 4
+: [0.16354513]
+: [0.8006109]
+: [-0.84182554]
+: [-2.697645]
+
+Since the numbers put out by both sessions are the same, the answer appears to be no. But wait, why does the second set of numbers not match the first? I'm assuming this is because I'm running this in a notebook... I'll have to look into that more. According to [[https://stackoverflow.com/questions/36096386/tensorflow-set-random-seed-not-working][Stack Overflow]] you either have to call =reset_default_graph= or set it at the operation-level (i.e. pass in the seed when creating the tensor). Resetting the default graph didn't seem to work when I tried it, but we'll see, I'm not a researcher so this might not be something for me to deal with right now.

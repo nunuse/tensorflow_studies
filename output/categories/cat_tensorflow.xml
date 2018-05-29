@@ -1,0 +1,891 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>TensorFlow Studies (Posts about TensorFlow)</title><link>https://github.com/necromuralist/tensorflow_studies/</link><description></description><atom:link href="https://github.com/necromuralist/tensorflow_studies/categories/cat_tensorflow.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 29 May 2018 01:09:05 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How Do You Create Tensors With Random Values?</title><link>https://github.com/necromuralist/tensorflow_studies/posts/how-do-you-create-tensors-with-random-values/</link><dc:creator>Cloistered Monkey</dc:creator><description>&lt;p&gt;
+Sometimes you want to initialize tensors with random values, like when you initialize a set of weights to train. You could start out with 0's or 1's but often when you don't know what values you want, it's better to start with random numbers. Here are the functions that tensorflow has.
+&lt;/p&gt;
+
+&lt;table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides"&gt;
+
+
+&lt;colgroup&gt;
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th scope="col" class="org-left"&gt;Function&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/random_normal"&gt;&lt;code&gt;random_normal&lt;/code&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Outputs random values from the &lt;a href="https://en.wikipedia.org/wiki/Normal_distribution"&gt;normal distribution&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/truncated_normal"&gt;&lt;code&gt;truncated_normal&lt;/code&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Values from the normal distribution within 2 standard deviations from the mean&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/random_uniform"&gt;&lt;code&gt;random_uniform&lt;/code&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Random values from a &lt;a href="https://en.wikipedia.org/wiki/Uniform_distribution_(continuous)"&gt;uniform distribution&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/random_shuffle"&gt;&lt;code&gt;random_shuffle&lt;/code&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Randomly shuffles a tensor along its first dimension&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/random_crop"&gt;&lt;code&gt;random_crop&lt;/code&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Randomly crop a tensor to a given size&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/multinomial"&gt;&lt;code&gt;multinomial&lt;/code&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Random values from a &lt;a href="https://en.wikipedia.org/wiki/Multinomial_distribution"&gt;multinomial distribution&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/random_gamma"&gt;&lt;code&gt;random_gamma&lt;/code&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Samples from each of the &lt;a href="https://en.wikipedia.org/wiki/Gamma_distribution"&gt;Gamma distributions&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/set_random_seed"&gt;&lt;code&gt;set_random_seed&lt;/code&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Sets the graph-level random seed&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div id="outline-container-org87fa8f5" class="outline-2"&gt;
+&lt;h2 id="org87fa8f5"&gt;How do you create a tensor with random values that are normally distributed?&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-org87fa8f5"&gt;
+&lt;p&gt;
+The &lt;code&gt;tenorflow.random_normal&lt;/code&gt; function creates a tensor of random value sampled from the normal distribution.
+&lt;/p&gt;
+
+&lt;table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides"&gt;
+
+
+&lt;colgroup&gt;
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th scope="col" class="org-left"&gt;Argument&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class="org-left"&gt;shape&lt;/td&gt;
+&lt;td class="org-left"&gt;The shape of the tensor to create&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;mean&lt;/td&gt;
+&lt;td class="org-left"&gt;The center of the distribution&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;stddev&lt;/td&gt;
+&lt;td class="org-left"&gt;The standard deviation of the distribution&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;dtype&lt;/td&gt;
+&lt;td class="org-left"&gt;The data type of the values&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;seed&lt;/td&gt;
+&lt;td class="org-left"&gt;A python integer to set the random seed&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;name&lt;/td&gt;
+&lt;td class="org-left"&gt;A label for debugging&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;
+By default the &lt;code&gt;random_normal&lt;/code&gt; functions samples from the standard normal distribution (so it has a mean of 0 and a standard deviation of 1). Here's how to create a \(3 \times 3\) tensor with values from the standard normal distribution.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_normal&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Tensor("random_normal:0", shape=(3, 3), dtype=float32)
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+If you want a different distribution you can pass in the mean and standard deviation. If you want to make it reproducible by others, you can also pass in the seed, althought the &lt;code&gt;set_random_seed&lt;/code&gt; function might be better for that.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_normal&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;mean&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stddev&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;seed&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"Bob"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Tensor("Bob:0", shape=(3, 3), dtype=float32)
+
+&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-orga3397eb" class="outline-3"&gt;
+&lt;h3 id="orga3397eb"&gt;How do you create a tensor with random values sampled from the normal distribution but not unlikely values?&lt;/h3&gt;
+&lt;div class="outline-text-3" id="text-orga3397eb"&gt;
+&lt;p&gt;
+Because about &lt;a href="https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule"&gt;95% of the area under the curve sits within 2 standard deviation from the mean&lt;/a&gt;, you can have tensorflow truncate the values that are more than 2 standard deviations from the mean so that you won't get those less likely values. This function takes the same arguments as the &lt;code&gt;random_normal&lt;/code&gt; function (so you can't change the truncation value).
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;truncated_normal&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;mean&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stddev&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;seed&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"TrunkyMcTrunkface"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Tensor("TrunkyMcTrunkface:0", shape=(3, 3), dtype=float32)
+
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-org287328e" class="outline-2"&gt;
+&lt;h2 id="org287328e"&gt;How do I make this randomness reproducible?&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-org287328e"&gt;
+&lt;p&gt;
+If you want to make the random values reproducible (by yourself or others) you can set the random seed using &lt;code&gt;set_random_seed&lt;/code&gt;. This will set the seed for the entire graph. There are two types of seeds to set - the graph-level seed (set here) that will be shared by all the operations and at the operation-level - by passing in the &lt;code&gt;seed&lt;/code&gt; argument to &lt;code&gt;random_normal&lt;/code&gt; for instance. You can use either or both, but I think in most cases you would want to use the &lt;code&gt;set_random_seed&lt;/code&gt; function unless you have a specific reason not to.
+&lt;/p&gt;
+
+&lt;p&gt;
+To see this in action, I'll create two random uniform numbers and two random normal numbers.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Session 1"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;set_random_seed&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;uniform&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_uniform&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;normal&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_normal&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;session_1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;uniform&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;uniform&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Session 1
+[0.3206401]
+[0.012326]
+[1.018752]
+[-1.0647357]
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+Now we'll do this again but in a new session. This should restart the random-number generators, giving us the same 'random' numbers.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Session 2"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;session_2&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;uniform&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;uniform&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Session 2
+[0.3206401]
+[0.012326]
+[1.018752]
+[-1.0647357]
+
+&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-org1b69e13" class="outline-3"&gt;
+&lt;h3 id="org1b69e13"&gt;Does setting the seed have to come before creating the tensors?&lt;/h3&gt;
+&lt;div class="outline-text-3" id="text-org1b69e13"&gt;
+&lt;p&gt;
+Let's try it and see.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Session 3"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;uniform&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_uniform&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;normal&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_normal&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+
+&lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;set_random_seed&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;session_3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;uniform&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;uniform&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Session 3
+[0.16354513]
+[0.8006109]
+[-0.84182554]
+[-2.697645]
+
+&lt;/pre&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Session 4"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;session_4&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_4&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;uniform&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_4&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;uniform&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_4&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session_4&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Session 4
+[0.16354513]
+[0.8006109]
+[-0.84182554]
+[-2.697645]
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+Since the numbers put out by both sessions are the same, the answer appears to be no. But wait, why does the second set of numbers not match the first? I'm assuming this is because I'm running this in a notebook… I'll have to look into that more. According to &lt;a href="https://stackoverflow.com/questions/36096386/tensorflow-set-random-seed-not-working"&gt;Stack Overflow&lt;/a&gt; you either have to call &lt;code&gt;reset_default_graph&lt;/code&gt; or set it at the operation-level (i.e. pass in the seed when creating the tensor). Resetting the default graph didn't seem to work when I tried it, but we'll see, I'm not a researcher so this might not be something for me to deal with right now.
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description><category>tensorflow dummies</category><guid>https://github.com/necromuralist/tensorflow_studies/posts/how-do-you-create-tensors-with-random-values/</guid><pubDate>Tue, 29 May 2018 00:47:20 GMT</pubDate></item><item><title>How do you create a Tensor with constant values?</title><link>https://github.com/necromuralist/tensorflow_studies/posts/constant-value-tensors/</link><dc:creator>Cloistered Monkey</dc:creator><description>&lt;p&gt;
+These are notes from &lt;b&gt;TensorFlow for Dummies&lt;/b&gt; and the &lt;a href="https://www.tensorflow.org/api_guides/python/constant_op#Constant_Value_Tensors"&gt;tensorflow documentation&lt;/a&gt;.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tensorflow&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sys.stderr = sys.stdout
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;
+There are various ways to create tensors by calling &lt;code&gt;tensorflow&lt;/code&gt; functions with values that you specify. I'll list some of the ways to create tensors with pre-specified values. The &lt;code&gt;Argument&lt;/code&gt; is just the main one you pass in to specify the tensor you want, each of the function has others as well, but they are optional. The &lt;code&gt;Returned Tensor Values&lt;/code&gt; describes what values are held by the tensor that is returned by the function.
+&lt;/p&gt;
+
+&lt;table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides"&gt;
+
+
+&lt;colgroup&gt;
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th scope="col" class="org-left"&gt;&lt;code&gt;tensorflow&lt;/code&gt; Function&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Argument&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Returned Tensor Values&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/constant"&gt;constant&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Value(s)&lt;/td&gt;
+&lt;td class="org-left"&gt;the value(s) you gave&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/zeros"&gt;zeros&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Shape&lt;/td&gt;
+&lt;td class="org-left"&gt;all zeros&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/ones"&gt;ones&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Shape&lt;/td&gt;
+&lt;td class="org-left"&gt;All ones&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/fill"&gt;fill&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Shape, Value&lt;/td&gt;
+&lt;td class="org-left"&gt;All the given value&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/lin-space"&gt;linspace&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Start, Stop, Steps&lt;/td&gt;
+&lt;td class="org-left"&gt;linearly spaced floats within the given range&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://www.tensorflow.org/api_docs/python/tf/range"&gt;range&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Start, Limit, Delta&lt;/td&gt;
+&lt;td class="org-left"&gt;range of numbers based on start, stop, and delta&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+&lt;div id="outline-container-org2cba90c" class="outline-2"&gt;
+&lt;h2 id="org2cba90c"&gt;How do you create a tensor with a constant value or values in it?&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-org2cba90c"&gt;
+&lt;p&gt;
+This is how you would create a tensor whose values never change. These are the arguments &lt;code&gt;tensorflow.constant&lt;/code&gt; takes.
+&lt;/p&gt;
+
+&lt;table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides"&gt;
+
+
+&lt;colgroup&gt;
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th scope="col" class="org-left"&gt;Argument&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class="org-left"&gt;value&lt;/td&gt;
+&lt;td class="org-left"&gt;value or list of values for the tensor&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;dtype&lt;/td&gt;
+&lt;td class="org-left"&gt;Type of the elements for the tensor&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;shape&lt;/td&gt;
+&lt;td class="org-left"&gt;Dimensions of the tensor to create&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;name&lt;/td&gt;
+&lt;td class="org-left"&gt;name for the tensor&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;print(tensorflow.constant(3))
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Tensor("Const:0", shape=(), dtype=int32)
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+Passing in the value and the shape seems unnecessary, but the more specific you are, the more built in error handling you have. To actually raise an error on a mismatch, though, you have to pass in an extra &lt;code&gt;True&lt;/code&gt; argument to turn on error checking. 
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;try:
+    tensorflow.constant([1,3], tensorflow.int16, [3], 'Fail', True)
+except TypeError as error:
+    print(error)
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Expected Tensor's shape: (3,), got (2,).
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+Another useful thing about the &lt;code&gt;shape&lt;/code&gt; argument is that if you pass in a single value and a shape, then it will create a tensor with the given shape and use the value you passed in to populate it. This would create a \(3 \times 2\) tensor with 5 for all the values.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;print(tensorflow.constant(5, shape=[3, 2]))
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Tensor("Const_6:0", shape=(3, 2), dtype=int32)
+
+&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-orgcd620e5" class="outline-3"&gt;
+&lt;h3 id="orgcd620e5"&gt;That's nice, but what do you do with it?&lt;/h3&gt;
+&lt;div class="outline-text-3" id="text-orgcd620e5"&gt;
+&lt;p&gt;
+The Tensor's we create are used to create a graph (there is one default one so as we create tensors we are adding them to this default graph). Then to actually do something we have to run them in a session. Here's how to do \(4 + 8\) in TensorFlow.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;four = tensorflow.constant(4, dtype=tensorflow.float32)
+eight = tensorflow.constant(8, dtype=tensorflow.float32)
+four_plus_eight = four + eight
+
+with tensorflow.Session() as session:
+    print(session.run(four_plus_eight))
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+12.0
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+And here's how you do \(4 \times 8\).
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;four_times_eight = four * eight
+with tensorflow.Session() as session:
+    print(session.run(four_times_eight))
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+32.0
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+Excited?
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id="outline-container-orgbb5fcc2" class="outline-2"&gt;
+&lt;h2 id="orgbb5fcc2"&gt;How do you create a tensor with only zeros or only ones in it?&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-orgbb5fcc2"&gt;
+&lt;p&gt;
+For the &lt;code&gt;zeros&lt;/code&gt; and &lt;code&gt;ones&lt;/code&gt; functions you only have to pass in the shape, but it does have some other arguments.
+&lt;/p&gt;
+
+&lt;table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides"&gt;
+
+
+&lt;colgroup&gt;
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th scope="col" class="org-left"&gt;Argument&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class="org-left"&gt;shape&lt;/td&gt;
+&lt;td class="org-left"&gt;A list with the shape of the tensor&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;dtype&lt;/td&gt;
+&lt;td class="org-left"&gt;The data-type you want the values to have&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;name&lt;/td&gt;
+&lt;td class="org-left"&gt;A descriptive name to make debugging easier&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;
+Here's how to create a \(5 \times 6\) tensor filled with zeros.
+&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;zeros = tensorflow.zeros([5, 6])
+print(zeros)
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Tensor("zeros_1:0", shape=(5, 6), dtype=float32)
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+Here's how to create a tensor with the same shape but filled with ones.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ones = tensorflow.ones([5, 6])
+print(ones)
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Tensor("ones_2:0", shape=(5, 6), dtype=float32)
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+These are really convenience functions that do the same thing as the &lt;code&gt;constant&lt;/code&gt; function. Since I'm  creating Tensors, you can use the operations on them as I did earlier.
+&lt;/p&gt;
+
+&lt;p&gt;
+If you multiply the ones by a scalar it will transmit it across the cells.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;with tensorflow.Session() as session:
+    print(session.run(four * ones))
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+[[4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]]
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+Since 0 is the identifier for addition we can do a similar thing to the zeros.
+&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;with tensorflow.Session() as session:
+    print(session.run(four + zeros))
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+[[4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]]
+
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-org27f15f3" class="outline-2"&gt;
+&lt;h2 id="org27f15f3"&gt;How do you create a tensor filled with the same value?&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-org27f15f3"&gt;
+&lt;p&gt;
+The &lt;code&gt;fill&lt;/code&gt; function creates a tensor with all the values and data-types being the same as the value you give it, so there's no &lt;code&gt;dtype&lt;/code&gt; argument. I'm not sure when this would be preferable to using &lt;code&gt;constant&lt;/code&gt;, maybe it's just a convenience function
+&lt;/p&gt;
+
+&lt;table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides"&gt;
+
+
+&lt;colgroup&gt;
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th scope="col" class="org-left"&gt;Argument&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class="org-left"&gt;dims&lt;/td&gt;
+&lt;td class="org-left"&gt;The shape of the tensor&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;value&lt;/td&gt;
+&lt;td class="org-left"&gt;The value to fill the tensor with&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;name&lt;/td&gt;
+&lt;td class="org-left"&gt;Descriptive name for debugging&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;
+The &lt;b&gt;Dummies&lt;/b&gt; book says that &lt;code&gt;fill&lt;/code&gt; only works with 32-bit floating point numbers, but that doesn't appear to be the case at the momemnt.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;print(tensorflow.fill([5, 6], 5))
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Tensor("Fill_1:0", shape=(5, 6), dtype=int32)
+
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-org16682cc" class="outline-2"&gt;
+&lt;h2 id="org16682cc"&gt;How do you create a tensor of evenly spaced numbers?&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-org16682cc"&gt;
+&lt;p&gt;
+The &lt;code&gt;linspace&lt;/code&gt; (linear space) function will create a tensor with numbers evenly spaced from some start value to some end value. The start and stop values you give it are always the first and last values in the tensor.
+&lt;/p&gt;
+
+&lt;table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides"&gt;
+
+
+&lt;colgroup&gt;
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th scope="col" class="org-left"&gt;Argument&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class="org-left"&gt;start&lt;/td&gt;
+&lt;td class="org-left"&gt;The first number in the sequence&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;stop&lt;/td&gt;
+&lt;td class="org-left"&gt;The last number in the sequence&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;num&lt;/td&gt;
+&lt;td class="org-left"&gt;The number of numbers in the sequence&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;
+Here's how to create a tensor that represents a sequence from 5 to 13 with 7 numbers in the sequence.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;print(tensorflow.linspace(5.0, 13.0, 7))
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Tensor("LinSpace_12:0", shape=(7,), dtype=float32)
+
+&lt;/pre&gt;
+
+
+&lt;p&gt;
+Note that the number types are important here. The &lt;code&gt;start&lt;/code&gt; and &lt;code&gt;stop&lt;/code&gt; have to be floating point numbers (so use a decmal point) and them &lt;code&gt;num&lt;/code&gt; has to be an integer (so don't put a decimal point).
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;try:
+    tensorflow.linspace(5, 13, 7)
+except TypeError as error:
+    print(error)
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Value passed to parameter 'start' has DataType int32 not in list of allowed values: bfloat16, float32, float64
+
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-org044a495" class="outline-2"&gt;
+&lt;h2 id="org044a495"&gt;How do you create a tensor with a range of numbers with a specific amount between each step?&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-org044a495"&gt;
+&lt;p&gt;
+The &lt;code&gt;range&lt;/code&gt; function creates a tensor works similarly to &lt;a href="https://docs.python.org/3.5/library/functions.html#func-range"&gt;ipython's range&lt;/a&gt;, you give a start value, an upper limit value and a step-size (what &lt;b&gt;tensorflow&lt;/b&gt; calls a delta) and it creates values from the start up to the upper limit (but not including it).
+&lt;/p&gt;
+
+&lt;table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides"&gt;
+
+
+&lt;colgroup&gt;
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th scope="col" class="org-left"&gt;Argument&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class="org-left"&gt;start&lt;/td&gt;
+&lt;td class="org-left"&gt;The first number in the range&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;limit&lt;/td&gt;
+&lt;td class="org-left"&gt;The upper bound for the range&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;delta&lt;/td&gt;
+&lt;td class="org-left"&gt;The amount to add to each previous value to create the range&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;dtype&lt;/td&gt;
+&lt;td class="org-left"&gt;The data-type for the values in the range&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;name&lt;/td&gt;
+&lt;td class="org-left"&gt;A label to make debugging easier&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+&lt;p&gt;
+This makes a range from 5 to 8 with steps of 2. By default it will use the data-type of the values you pass in, so I'll cast it to a float, just to be different.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;print(tensorflow.range(5, 8, 2, dtype=tensorflow.float32, name="Ted"))
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+Tensor("Ted_1:0", shape=(2,), dtype=float32)
+
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description><category>tensorflow dummies</category><guid>https://github.com/necromuralist/tensorflow_studies/posts/constant-value-tensors/</guid><pubDate>Tue, 29 May 2018 00:43:55 GMT</pubDate></item><item><title>What is a tensor?</title><link>https://github.com/necromuralist/tensorflow_studies/posts/what-is-a-tensor/</link><dc:creator>Cloistered Monkey</dc:creator><description>&lt;p&gt;
+These are notes from &lt;b&gt;TensorFlow for Dummies&lt;/b&gt; and the &lt;a href="https://www.tensorflow.org/api_guides/python/constant_op#Constant_Value_Tensors"&gt;tensorflow documentation&lt;/a&gt;.
+&lt;/p&gt;
+
+&lt;div id="outline-container-org5f16da2" class="outline-2"&gt;
+&lt;h2 id="org5f16da2"&gt;What are tensors?&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-org5f16da2"&gt;
+&lt;p&gt;
+This is primarily about &lt;a href="https://www.tensorflow.org/programmers_guide/tensors"&gt;tensors&lt;/a&gt;. Although they have a specific mathematical meeting, when working with them it might be easier just to think of them as arrays. Although the tensors look a lot like &lt;a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html"&gt;numpy&lt;/a&gt; arrays, because TensorFlow defines all its parts before executing anything in a session, while more traditional python libraries like &lt;a href="http://www.numpy.org/"&gt;numpy&lt;/a&gt; execute each line, all your operations need to be done through tensorflow's &lt;a href="https://www.tensorflow.org/api_docs/python/"&gt;API&lt;/a&gt;, rather than any other python method.
+&lt;/p&gt;
+&lt;/div&gt;
+
+
+&lt;div id="outline-container-orgb07c916" class="outline-3"&gt;
+&lt;h3 id="orgb07c916"&gt;Okay, so what's a tensor, again?&lt;/h3&gt;
+&lt;div class="outline-text-3" id="text-orgb07c916"&gt;
+&lt;p&gt;
+A tensor is an abstraction that encompasses the things you learned about in Linear Algebra and physics.
+&lt;/p&gt;
+
+&lt;ul class="org-ul"&gt;
+&lt;li&gt;A tensor with zero dimensions is a &lt;b&gt;scalar&lt;/b&gt;&lt;/li&gt;
+&lt;li&gt;A tensor with one dimension is a &lt;b&gt;vector&lt;/b&gt;&lt;/li&gt;
+&lt;li&gt;A tensor with two dimensions is a &lt;b&gt;matrix&lt;/b&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;
+A &lt;b&gt;tensorflow&lt;/b&gt; tensor:
+&lt;/p&gt;
+
+&lt;ul class="org-ul"&gt;
+&lt;li&gt;is an instance of the &lt;a href="https://www.tensorflow.org/api_docs/python/tf/Tensor"&gt;Tensor&lt;/a&gt; class&lt;/li&gt;
+&lt;li&gt;can have elements of type float, integer, string, or boolean, and all the elements of a tensor must be of the same type&lt;/li&gt;
+&lt;li&gt;can be created and operated on using the tensorflow API&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;
+&lt;b&gt;Some Jargon&lt;/b&gt;
+&lt;/p&gt;
+
+&lt;table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides"&gt;
+
+
+&lt;colgroup&gt;
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th scope="col" class="org-left"&gt;Term&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Meaning&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;b&gt;rank&lt;/b&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;The number of dimensions of a tensor&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;b&gt;shape&lt;/b&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;The length of each of a tensor's dimensions&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description><category>tensorflow dummies</category><guid>https://github.com/necromuralist/tensorflow_studies/posts/what-is-a-tensor/</guid><pubDate>Sun, 27 May 2018 01:28:55 GMT</pubDate></item><item><title>Hello Tensorflow</title><link>https://github.com/necromuralist/tensorflow_studies/posts/hellow-tensorflow/</link><dc:creator>Cloistered Monkey</dc:creator><description>&lt;p&gt;
+This is largely from &lt;b&gt;TensorFlow for Dummies&lt;/b&gt;.
+&lt;/p&gt;
+
+&lt;div id="outline-container-orgc161f8a" class="outline-2"&gt;
+&lt;h2 id="orgc161f8a"&gt;Hello&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-orgc161f8a"&gt;
+&lt;p&gt;
+This is a &lt;a href="https://en.wikipedia.org/wiki/%22Hello,_World!%22_program"&gt;hello-world&lt;/a&gt; for tensorflow, it will create a tensor with our message and then print it when the graph is executed.
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id="outline-container-org3393765" class="outline-3"&gt;
+&lt;h3 id="org3393765"&gt;Import&lt;/h3&gt;
+&lt;div class="outline-text-3" id="text-org3393765"&gt;
+&lt;p&gt;
+We're just going to import &lt;a href="https://www.tensorflow.org/"&gt;tensorflow&lt;/a&gt;.
+&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tensorflow&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-orgf54ec2d" class="outline-3"&gt;
+&lt;h3 id="orgf54ec2d"&gt;Create the Tensor&lt;/h3&gt;
+&lt;div class="outline-text-3" id="text-orgf54ec2d"&gt;
+&lt;p&gt;
+We're going to use &lt;a href="https://www.tensorflow.org/api_docs/python/tf/string_join"&gt;&lt;code&gt;string_join&lt;/code&gt;&lt;/a&gt; which takes a lists of strings (it will consider each one a separate &lt;a href="https://www.tensorflow.org/programmers_guide/tensors"&gt;tensor&lt;/a&gt;) and creates a single &lt;a href="https://en.wikipedia.org/wiki/Tensor"&gt;tensor&lt;/a&gt; that we're going to store in the &lt;code&gt;message&lt;/code&gt; variable.
+&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;message&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;string_join&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;'Hello '&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'TensorFlow!'&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-org07adbdb" class="outline-3"&gt;
+&lt;h3 id="org07adbdb"&gt;Running the Session&lt;/h3&gt;
+&lt;div class="outline-text-3" id="text-org07adbdb"&gt;
+&lt;p&gt;
+When you create a tensor it doesn't execute the calculations, it just defines what is going to be used to run the execution. To actually execute it you need to create a &lt;a href="https://www.tensorflow.org/api_docs/python/tf/Session"&gt;Session&lt;/a&gt; and then &lt;a href="https://www.tensorflow.org/api_docs/python/tf/Session#run"&gt;run&lt;/a&gt; it.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;tensorflow&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;message&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre class="example"&gt;
+: b'Hello TensorFlow!'
+&lt;/pre&gt;
+
+&lt;p&gt;
+The first argument to &lt;code&gt;run&lt;/code&gt; can be any single graph element or list of graph elements that you want tensorflow to execute.
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id="outline-container-org0b84a84" class="outline-2"&gt;
+&lt;h2 id="org0b84a84"&gt;Style&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-org0b84a84"&gt;
+&lt;p&gt;
+Google has a &lt;a href="https://www.tensorflow.org/community/style_guide"&gt;style guide&lt;/a&gt; specifically for TensorFlow. It says that you should follow the &lt;a href="https://pep8.readthedocs.io/en/release-1.7.x/"&gt;PEP 8&lt;/a&gt; style guide except where they think they know better. The exceptions are:
+&lt;/p&gt;
+
+&lt;ul class="org-ul"&gt;
+&lt;li&gt;2 spaces instead of 4 for indentation&lt;/li&gt;
+&lt;li&gt;Make everything compatible with both python 2 and 3&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;
+This means that every file should have these imports in them:
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;__future__&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;absolute_import&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;__future__&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;division&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;__future__&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;print_function&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;
+And you should use &lt;a href="https://pythonhosted.org/six/"&gt;six&lt;/a&gt; or something like it to make other compatibility changes.
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description><category>tensorflow dummies</category><guid>https://github.com/necromuralist/tensorflow_studies/posts/hellow-tensorflow/</guid><pubDate>Sat, 26 May 2018 22:45:39 GMT</pubDate></item></channel></rss>

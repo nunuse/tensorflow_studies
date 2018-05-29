@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>TensorFlow Studies (Posts about MachineLearning)</title><link>https://github.com/necromuralist/tensorflow_studies/</link><description></description><atom:link href="https://github.com/necromuralist/tensorflow_studies/categories/cat_machinelearning.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 26 May 2018 22:44:43 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>The Development of Machine Learning (as it relates to TensorFlow)</title><link>https://github.com/necromuralist/tensorflow_studies/posts/the-development-of-machine-learning/</link><dc:creator>Cloistered Monkey</dc:creator><description>&lt;div id="outline-container-org653160a" class="outline-2"&gt;
+&lt;h2 id="org653160a"&gt;A Brief Timeline&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-org653160a"&gt;
+&lt;table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides"&gt;
+
+
+&lt;colgroup&gt;
+&lt;col class="org-right"&gt;
+
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th scope="col" class="org-right"&gt;Year&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Person&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Event&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1763&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Thomas_Bayes"&gt;Thomas Bayes&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/An_Essay_towards_solving_a_Problem_in_the_Doctrine_of_Chances"&gt;The Underpinning of Bayes' Theorem&lt;/a&gt; is published&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1803&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Adrien-Marie_Legendre"&gt;Adrian-Marie Legendre&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Discovers the &lt;a href="https://en.wikipedia.org/wiki/Least_squares"&gt;method of least squares&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1894&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Francis_Galton"&gt;Francis Galton&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Uses &lt;a href="https://en.wikipedia.org/wiki/Regression_toward_the_mean"&gt;regression to the mean&lt;/a&gt; to study inherited traits&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1943&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Warren_Sturgis_McCulloch"&gt;McCulloch&lt;/a&gt; and &lt;a href="https://en.wikipedia.org/wiki/Warren_Sturgis_McCulloch"&gt;Pitts&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Create the first &lt;a href="https://en.wikipedia.org/wiki/Artificial_neuron"&gt;artificial neuron&lt;/a&gt; model&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1957&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Frank_Rosenblatt"&gt;Frank Rosenblatt&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Creates the &lt;a href="https://en.wikipedia.org/wiki/Perceptron"&gt;perceptron&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1963&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Vladimir_Vapnik"&gt;Vapnik&lt;/a&gt; and &lt;a href="https://en.wikipedia.org/wiki/Alexey_Chervonenkis"&gt;Chervonenkis&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Invent the &lt;a href="https://en.wikipedia.org/wiki/Support_vector_machine"&gt;Support Vector Machine algorithm&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1965&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Alexey_Ivakhnenko"&gt;Ivakhnenko&lt;/a&gt; and Lapa&lt;/td&gt;
+&lt;td class="org-left"&gt;Demonstrate &lt;a href="https://en.wikipedia.org/wiki/Multilayer_perceptron"&gt;multilayer perceptron&lt;/a&gt; with non-linear activation&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1980&lt;/td&gt;
+&lt;td class="org-left"&gt;Kunihiko Fukushima&lt;/td&gt;
+&lt;td class="org-left"&gt;Proposes the &lt;a href="https://en.wikipedia.org/wiki/Neocognitron"&gt;neocognitron&lt;/a&gt;, a multilayer neural network for image recognition&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1974&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Paul_Werbos"&gt;Paul Werbos&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Uses &lt;a href="https://en.wikipedia.org/wiki/Backpropagation"&gt;backpropagation&lt;/a&gt; to train a &lt;a href="https://en.wikipedia.org/wiki/Artificial_neural_network"&gt;neural network&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1982&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/John_Hopfield"&gt;John Hopfield&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Developes the &lt;a href="https://en.wikipedia.org/wiki/Hopfield_network"&gt;Hopfield network&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1986&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Terry_Sejnowski"&gt;Sejnowski&lt;/a&gt; and Rosenberg&lt;/td&gt;
+&lt;td class="org-left"&gt;Develop &lt;a href="https://en.wikipedia.org/wiki/NETtalk_(artificial_neural_network)"&gt;NETtalk&lt;/a&gt;, an Neural Network that learned how to pronounce words&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;1998&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Yann_LeCun"&gt;Yann LeCun&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Trains a &lt;a href="https://en.wikipedia.org/wiki/Convolutional_neural_network"&gt;Convolutional Neural Network&lt;/a&gt; (the LeNet-5) to recognize digits&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;2002&lt;/td&gt;
+&lt;td class="org-left"&gt;Collobert, Kavukcuoglu, and Farabet&lt;/td&gt;
+&lt;td class="org-left"&gt;Release the &lt;a href="https://en.wikipedia.org/wiki/Torch_(machine_learning)"&gt;Torch framework&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;2006&lt;/td&gt;
+&lt;td class="org-left"&gt;Netflix&lt;/td&gt;
+&lt;td class="org-left"&gt;Offers &lt;a href="https://en.wikipedia.org/wiki/Netflix_Prize"&gt;$1 Million prize&lt;/a&gt; to help with movie recommendations&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;2014&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Ian_Goodfellow"&gt;Ian Goodfellow&lt;/a&gt;, et al.&lt;/td&gt;
+&lt;td class="org-left"&gt;Invent &lt;a href="https://en.wikipedia.org/wiki/Generative_adversarial_network"&gt;Generative Adversarial Networks&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;2015&lt;/td&gt;
+&lt;td class="org-left"&gt;Francis Chollet&lt;/td&gt;
+&lt;td class="org-left"&gt;Releases &lt;a href="https://en.wikipedia.org/wiki/Keras"&gt;Keras&lt;/a&gt; for deep neural network development&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-right"&gt;2015&lt;/td&gt;
+&lt;td class="org-left"&gt;&lt;a href="https://en.wikipedia.org/wiki/Google_Brain"&gt;Google Brain&lt;/a&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Releases &lt;a href="https://en.wikipedia.org/wiki/TensorFlow"&gt;TensorFlow&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-org292f79a" class="outline-2"&gt;
+&lt;h2 id="org292f79a"&gt;Sources&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-org292f79a"&gt;
+&lt;ul class="org-ul"&gt;
+&lt;li&gt;Scarpino, Matthew. Tensorflow for Dummies. 1st edition. Indianapolis, IN: John Wiley and Sons, 2018.&lt;/li&gt;
+&lt;li&gt;“Timeline of Artificial Intelligence.” Wikipedia, May 17, 2018. &lt;a href="https://en.wikipedia.org/w/index.php?title=Timeline_of_artificial_intelligence&amp;amp;oldid=841669863"&gt;https://en.wikipedia.org/w/index.php?title=Timeline_of_artificial_intelligence&amp;amp;oldid=841669863&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;“Timeline of Machine Learning - Wikipedia.” Accessed May 26, 2018. &lt;a href="https://en.wikipedia.org/wiki/Timeline_of_machine_learning"&gt;https://en.wikipedia.org/wiki/Timeline_of_machine_learning&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description><category>history machinelearning dummies</category><guid>https://github.com/necromuralist/tensorflow_studies/posts/the-development-of-machine-learning/</guid><pubDate>Sat, 26 May 2018 20:45:28 GMT</pubDate></item></channel></rss>
