@@ -23,9 +23,75 @@ This is based on *TensorFlow for Dummies* and the TensorFlow documentation.
 import tensorflow
 #+END_SRC
 
+#+RESULTS:
+: # Out[1]:
+
 * How do you use logging?
   The [[https://www.tensorflow.org/api_docs/python/tf/logging][TensorFlow logging]] looks a lot like the regular [[https://docs.python.org/3.5/library/logging.html][python logging]] with some notable helpful additions - you can have print conditionally, you can have it print only a certain number of times, and you can have it print once every so many times that it's called. To enable it you set its verbosity level with the [[https://www.tensorflow.org/api_docs/python/tf/logging/set_verbosity][set_verbosity]] function.
 
-#+BEGIN_SRC ipython :session dummies :exports both :results output
-tensorflow.logging.set_verbosity(logging.)
+#+BEGIN_SRC ipython :session dummies :exports both :results none
+tensorflow.logging.set_verbosity(tensorflow.logging.INFO)
 #+END_SRC
+
+* Create some tensors
+  To actually illustrate how to use this stuff I'll create some tensors to do some linear algebra.
+
+#+BEGIN_SRC ipython :session dummies :exports both :results none
+data_1 = tensorflow.random_normal([8], name="random")
+data_2 = tensorflow.linspace(1.0, 100.0, 8, name="LinearSpace")
+dot_product = tensorflow.tensordot(data_1, data_2, axes=1, name="DotProduct")
+#+END_SRC
+
+* How do you create summary information?
+  There are basically two steps. For each of your Tensors, you add it using [[https://www.tensorflow.org/api_docs/python/tf/summary/scalar][=tensorflow.summary.scalar=]], then you merge the summaries into one using [[https://www.tensorflow.org/api_docs/python/tf/summary/merge_all][=tensorflow.summary.merge_all]]. For my tensors created in the previous section it would look something like this.
+
+#+BEGIN_SRC ipython :session dummies :exports both :results none
+tensorflow.summary.scalar("data_1", data_1[0])
+tensorflow.summary.scalar("data_2", data_2[0])
+tensorflow.summary.scalar("dot_product", dot_product)
+
+merged = tensorflow.summary.merge_all()
+#+END_SRC
+
+* How do you save the summary?
+  You can save the summary as a [[https://en.wikipedia.org/wiki/Protocol_Buffers][protocol buffer]] using [[https://www.tensorflow.org/api_docs/python/tf/summary/FileWriter][=tensorflow.summary.FileWriter=]]. This next step will create it and then you use it once you run the session.
+
+#+BEGIN_SRC ipython :session dummies :exports both :results none
+writer = tensorflow.summary.FileWriter("/tmp/tensorlog", graph=tensorflow.get_default_graph())
+#+END_SRC
+
+These are the arguments to the =FileWriter= constructor.
+
+| Argument        | Description                              |
+|-----------------+------------------------------------------|
+| logdir          | Directory where the file will be saved   |
+| graph           | The graph to store                       |
+| max_queue       | Size of the event queue                  |
+| flush_secs      | How often to flush pending items to disk |
+| filename_suffix | Suffix to add to the file                |
+
+* Okay, but how do you use this?
+  You run this in a session.
+
+#+BEGIN_SRC ipython :session dummies :exports both :results output
+with tensorflow.Session() as session:
+    # run the session
+    outcome, summary = session.run([dot_product, merged])
+
+    # log the outcome
+    tensorflow.logging.info("Dot Product: %s", outcome)
+
+    # print the summary
+    writer.add_summary(summary)
+
+    # force it to dump now
+    writer.flush()
+
+    # Save the graph
+    tensorflow.train.write_graph(session.graph, "/tmp/tensorlog", 'graph_1.dat')
+#+END_SRC
+
+#+RESULTS:
+: INFO:tensorflow:Dot Product: 9.390775
+
+** Come again?
