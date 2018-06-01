@@ -1,11 +1,11 @@
 #+BEGIN_COMMENT
-.. title: Logging, Multiple Graphs, Summaries, and Saving Graphs
+.. title: Logging, Summaries, and Saving Graphs
 .. slug: logging-multiple-graphs-summaries-and-saving-graphs
 .. date: 2018-05-29 14:30:05 UTC-07:00
 .. tags: tensorflow dummies
 .. category: TensorFlow
 .. link: 
-.. description: How to use logging, create multiple graphs, summarize graphs and save them.
+.. description: How to use logging, summarize graphs and save them.
 .. type: text
 #+END_COMMENT
 
@@ -92,6 +92,15 @@ with tensorflow.Session() as session:
 #+END_SRC
 
 #+RESULTS:
-: INFO:tensorflow:Dot Product: 9.390775
+: INFO:tensorflow:Dot Product: -77.974
 
 ** Come again?
+   In our previous code, we were setting up the code that we want to run. To actually run it you start a [[https://www.tensorflow.org/api_docs/python/tf/Session][=tensorflow.Session=]] and [[https://www.tensorflow.org/api_docs/python/tf/Session#run][run]] the operations in the graph (called =dot_product= in this case). Since we want a summary, you also pass in the =merged= summary. the [[https://www.tensorflow.org/api_docs/python/tf/summary/FileWriter#add_summary][=tensorflow.summary.FileWriter.add_summary=]] method adds the summary protocol buffer to the file-writer and the [[https://www.tensorflow.org/api_docs/python/tf/summary/FileWriter#flush][=tensorflow.summary.FileWriter.flush=]] method tells the FileWriter to write it to disk immediately instead of buffering it to memory. Finally the [[https://www.tensorflow.org/api_docs/python/tf/train/write_graph][=tensorflow.train.write_graph=]] function stores the graph as a protocol buffer to disk.
+
+   You may notice that there really isn't anything shown by the summary, it's just being dumped to disk. That's because you look at the summary using [[https://www.tensorflow.org/programmers_guide/summaries_and_tensorboard][TensorBoard]], which starts a web-server that lets you inspect the summary. You can pass it the directory where we stored the summary when you start it.
+
+#+BEGIN_EXAMPLE
+tensorflow --logdir /tmp/tensorlog
+#+END_EXAMPLE
+
+This will open a web-server at =http://localhost:6006= where you can poke around at the graph.

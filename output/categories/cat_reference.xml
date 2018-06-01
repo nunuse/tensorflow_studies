@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>TensorFlow Studies (Posts about reference)</title><link>https://github.com/necromuralist/tensorflow_studies/</link><description></description><atom:link href="https://github.com/necromuralist/tensorflow_studies/categories/cat_reference.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 26 May 2018 20:59:07 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Bibliography</title><link>https://github.com/necromuralist/tensorflow_studies/posts/bibliography/</link><dc:creator>Cloistered Monkey</dc:creator><description>&lt;div id="outline-container-orgfccd34c" class="outline-2"&gt;
-&lt;h2 id="orgfccd34c"&gt;Books&lt;/h2&gt;
-&lt;div class="outline-text-2" id="text-orgfccd34c"&gt;
-&lt;p&gt;
-[B1] Scarpino, Matthew. Tensorflow for Dummies. 1st edition. Indianapolis, IN: John Wiley and Sons, 2018.
-&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;</description><category>bibliography tensorflow</category><guid>https://github.com/necromuralist/tensorflow_studies/posts/bibliography/</guid><pubDate>Sat, 26 May 2018 20:49:14 GMT</pubDate></item></channel></rss>

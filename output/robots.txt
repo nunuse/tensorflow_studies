@@ -1,4 +1,0 @@
-Sitemap: https://github.com/necromuralist/tensorflow_studies/sitemapindex.xml
-
-User-Agent: *
-Host: github.com
