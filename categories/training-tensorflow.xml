@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>TensorFlow Studies (Posts about training tensorflow)</title><link>https://github.com/necromuralist/tensorflow_studies/</link><description></description><atom:link href="https://github.com/necromuralist/tensorflow_studies/categories/training-tensorflow.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 02 Jun 2018 01:49:01 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Training A Non-Neural Net Model</title><link>https://github.com/necromuralist/tensorflow_studies/posts/training-a-non-neural-net-model/</link><dc:creator>Cloistered Monkey</dc:creator><description>&lt;div id="outline-container-orgddb802d" class="outline-2"&gt;
+&lt;h2 id="orgddb802d"&gt;Imports&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-orgddb802d"&gt;
+&lt;p&gt;
+This is the tensorflow style guide recommendation to make the code backwards-compatible with python 2.7. I don't think it makes sense anymore, since python 2 is nearing the for-real-this-time end-of-life date (sometime in 2010). Oh, well.
+&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;# python standard library
+import os
+
+# from pypi
+import tensorflow as tf
+
+import matplotlib.pyplot as pyplot
+import numpy
+import seaborn
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;% matplotlib inline
+seaborn.set()
+seaborn.set_style("whitegrid", {"axes.grid": False})
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-org6f31152" class="outline-2"&gt;
+&lt;h2 id="org6f31152"&gt;A Polynomial Loss Model&lt;/h2&gt;
+&lt;div class="outline-text-2" id="text-org6f31152"&gt;
+&lt;p&gt;
+We're going to build a model using a polynomial loss function. Here's what it looks like.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;x = numpy.linspace(-5, 5)
+y = 2*x**2 + 3*x + 4
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;figure = pyplot.figure()
+axe = figure.gca()
+axe.set_title("Loss Function")
+plot = pyplot.plot(x, y)
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="outline-container-orgc6b2fd0" class="outline-3"&gt;
+&lt;h3 id="orgc6b2fd0"&gt;Setup&lt;/h3&gt;
+&lt;div class="outline-text-3" id="text-orgc6b2fd0"&gt;
+&lt;p&gt;
+The first thing we will do is setup some variables for the training. The &lt;a href="https://www.tensorflow.org/programmers_guide/variables"&gt;&lt;code&gt;tensorflow.Variable&lt;/code&gt;&lt;/a&gt; is a tensor (but not a &lt;a href="https://www.tensorflow.org/programmers_guide/tensors"&gt;&lt;code&gt;tensorflow.Tensor&lt;/code&gt;&lt;/a&gt;) whose values can be updated. It maintains its value in between &lt;a href="https://www.tensorflow.org/api_docs/python/tf/Session"&gt;Sessions&lt;/a&gt; so if you run multiple sessions the value wil carry over to each run. Its constructor takes these arguments.
+&lt;/p&gt;
+
+&lt;table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides"&gt;
+
+
+&lt;colgroup&gt;
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+
+&lt;col class="org-left"&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th scope="col" class="org-left"&gt;Argument&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Description&lt;/th&gt;
+&lt;th scope="col" class="org-left"&gt;Default&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;code&gt;initial_value&lt;/code&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Tensor that represents the starting value&lt;/td&gt;
+&lt;td class="org-left"&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;code&gt;trainable&lt;/code&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;If True, added to the collection of variables used by the Optimizers&lt;/td&gt;
+&lt;td class="org-left"&gt;True&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;code&gt;collections&lt;/code&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;List of graph collection keys that the variable gets added to&lt;/td&gt;
+&lt;td class="org-left"&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;code&gt;validate_shape&lt;/code&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;If True, the shape of &lt;code&gt;initial_value&lt;/code&gt; must be known&lt;/td&gt;
+&lt;td class="org-left"&gt;True&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;code&gt;caching_device&lt;/code&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Device string describing where to cache the Variable&lt;/td&gt;
+&lt;td class="org-left"&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;code&gt;name&lt;/code&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Name for the variable&lt;/td&gt;
+&lt;td class="org-left"&gt;Variable + unique string&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;code&gt;variable_def&lt;/code&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Protocol buffer to use to recreate a variable&lt;/td&gt;
+&lt;td class="org-left"&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;code&gt;dtype&lt;/code&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;If set, the &lt;code&gt;initial_value&lt;/code&gt; will be converted to it&lt;/td&gt;
+&lt;td class="org-left"&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;code&gt;expected_shape&lt;/code&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;If set, &lt;code&gt;initial_value&lt;/code&gt; should have this shape&lt;/td&gt;
+&lt;td class="org-left"&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;code&gt;import_scope&lt;/code&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Name scope to add if initializing from a protocol buffer&lt;/td&gt;
+&lt;td class="org-left"&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td class="org-left"&gt;&lt;code&gt;constraint&lt;/code&gt;&lt;/td&gt;
+&lt;td class="org-left"&gt;Optional function to apply after being updated by an Optimizer&lt;/td&gt;
+&lt;td class="org-left"&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;
+First we'll make a trainable variable with an initial value of 0.
+&lt;/p&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;# Define a trainable variable
+x_var = tf.Variable(0., name='XTrainable')
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;# Define an untrainable variable to hold the global step
+step_var = tf.Variable(0, trainable=False)
+
+# Express loss in terms of the variable
+loss = x_var * x_var - 4.0 * x_var + 5.0
+
+# Find variable value that minimizes loss
+learn_rate = 0.1
+num_epochs = 40
+optimizer = tf.train.GradientDescentOptimizer(learn_rate).minimize(loss, global_step=step_var)
+
+# Initialize variables
+init = tf.global_variables_initializer()
+
+# Create the saver
+saver = tf.train.Saver()
+
+# Create summary data and FileWriter
+summary_op = tf.summary.scalar('x', x_var)
+file_writer = tf.summary.FileWriter('log', graph=tf.get_default_graph())
+
+# Launch session
+with tf.Session() as sess:
+    sess.run(init)
+
+    for epoch in range(num_epochs):
+	_, step, result, summary = sess.run([optimizer, step_var, x_var, summary_op])
+	print('Step %d: Computed result = %f' % (step, result))
+
+	# Print summary data
+	file_writer.add_summary(summary, global_step=step)
+	file_writer.flush()
+
+    # Store variable data
+    saver.save(sess, os.getcwd() + '/output')
+    print('Final x_var: %f' % sess.run(x_var))
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description><category>training tensorflow</category><guid>https://github.com/necromuralist/tensorflow_studies/posts/training-a-non-neural-net-model/</guid><pubDate>Fri, 01 Jun 2018 20:23:09 GMT</pubDate></item></channel></rss>

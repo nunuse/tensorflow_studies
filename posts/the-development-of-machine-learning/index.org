@@ -1,0 +1,39 @@
+#+BEGIN_COMMENT
+.. title: The Development of Machine Learning (as it relates to TensorFlow)
+.. slug: the-development-of-machine-learning
+.. date: 2018-05-26 13:45:28 UTC-07:00
+.. tags: history machinelearning dummies
+.. category: MachineLearning
+.. link: 
+.. description: The major milestones of Machine Learning.
+.. type: text
+#+END_COMMENT
+
+* A Brief Timeline
+
+  | Year | Person                              | Event                                                                        |
+  |------+-------------------------------------+------------------------------------------------------------------------------|
+  | 1763 | [[https://en.wikipedia.org/wiki/Thomas_Bayes][Thomas Bayes]]                        | [[https://en.wikipedia.org/wiki/An_Essay_towards_solving_a_Problem_in_the_Doctrine_of_Chances][The Underpinning of Bayes' Theorem]] is published                              |
+  | 1803 | [[https://en.wikipedia.org/wiki/Adrien-Marie_Legendre][Adrian-Marie Legendre]]               | Discovers the [[https://en.wikipedia.org/wiki/Least_squares][method of least squares]]                                        |
+  | 1894 | [[https://en.wikipedia.org/wiki/Francis_Galton][Francis Galton]]                      | Uses [[https://en.wikipedia.org/wiki/Regression_toward_the_mean][regression to the mean]] to study inherited traits                        |
+  | 1943 | [[https://en.wikipedia.org/wiki/Warren_Sturgis_McCulloch][McCulloch]] and [[https://en.wikipedia.org/wiki/Warren_Sturgis_McCulloch][Pitts]]                 | Create the first [[https://en.wikipedia.org/wiki/Artificial_neuron][artificial neuron]] model                                     |
+  | 1957 | [[https://en.wikipedia.org/wiki/Frank_Rosenblatt][Frank Rosenblatt]]                    | Creates the [[https://en.wikipedia.org/wiki/Perceptron][perceptron]]                                                       |
+  | 1963 | [[https://en.wikipedia.org/wiki/Vladimir_Vapnik][Vapnik]] and [[https://en.wikipedia.org/wiki/Alexey_Chervonenkis][Chervonenkis]]             | Invent the [[https://en.wikipedia.org/wiki/Support_vector_machine][Support Vector Machine algorithm]]                                  |
+  | 1965 | [[https://en.wikipedia.org/wiki/Alexey_Ivakhnenko][Ivakhnenko]] and Lapa                 | Demonstrate [[https://en.wikipedia.org/wiki/Multilayer_perceptron][multilayer perceptron]] with non-linear activation                 |
+  | 1980 | Kunihiko Fukushima                  | Proposes the [[https://en.wikipedia.org/wiki/Neocognitron][neocognitron]], a multilayer neural network for image recognition |
+  | 1974 | [[https://en.wikipedia.org/wiki/Paul_Werbos][Paul Werbos]]                         | Uses [[https://en.wikipedia.org/wiki/Backpropagation][backpropagation]] to train a [[https://en.wikipedia.org/wiki/Artificial_neural_network][neural network]]                               |
+  | 1982 | [[https://en.wikipedia.org/wiki/John_Hopfield][John Hopfield]]                       | Developes the [[https://en.wikipedia.org/wiki/Hopfield_network][Hopfield network]]                                               |
+  | 1986 | [[https://en.wikipedia.org/wiki/Terry_Sejnowski][Sejnowski]] and Rosenberg             | Develop [[https://en.wikipedia.org/wiki/NETtalk_(artificial_neural_network)][NETtalk]], an Neural Network that learned how to pronounce words       |
+  | 1998 | [[https://en.wikipedia.org/wiki/Yann_LeCun][Yann LeCun]]                          | Trains a [[https://en.wikipedia.org/wiki/Convolutional_neural_network][Convolutional Neural Network]] (the LeNet-5) to recognize digits      |
+  | 2002 | Collobert, Kavukcuoglu, and Farabet | Release the [[https://en.wikipedia.org/wiki/Torch_(machine_learning)][Torch framework]]                                                  |
+  | 2006 | Netflix                             | Offers [[https://en.wikipedia.org/wiki/Netflix_Prize][$1 Million prize]] to help with movie recommendations                   |
+  | 2014 | [[https://en.wikipedia.org/wiki/Ian_Goodfellow][Ian Goodfellow]], et al.              | Invent [[https://en.wikipedia.org/wiki/Generative_adversarial_network][Generative Adversarial Networks]]                                       |
+  | 2015 | Francis Chollet                     | Releases [[https://en.wikipedia.org/wiki/Keras][Keras]] for deep neural network development                           |
+  | 2015 | [[https://en.wikipedia.org/wiki/Google_Brain][Google Brain]]                        | Releases [[https://en.wikipedia.org/wiki/TensorFlow][TensorFlow]]                                                          |
+
+* Sources
+ - Scarpino, Matthew. Tensorflow for Dummies. 1st edition. Indianapolis, IN: John Wiley and Sons, 2018.
+ - “Timeline of Artificial Intelligence.” Wikipedia, May 17, 2018. https://en.wikipedia.org/w/index.php?title=Timeline_of_artificial_intelligence&oldid=841669863.
+ - “Timeline of Machine Learning - Wikipedia.” Accessed May 26, 2018. https://en.wikipedia.org/wiki/Timeline_of_machine_learning.
+
+

@@ -1,0 +1,36 @@
+#+BEGIN_COMMENT
+.. title: What is a tensor?
+.. slug: what-is-a-tensor
+.. date: 2018-05-26 18:28:55 UTC-07:00
+.. tags: tensorflow dummies
+.. category: TensorFlow
+.. link: 
+.. description: Describes a tensor.
+.. type: text
+#+END_COMMENT
+
+These are notes from *TensorFlow for Dummies* and the [[https://www.tensorflow.org/api_guides/python/constant_op#Constant_Value_Tensors][tensorflow documentation]].
+
+* What are tensors?
+This is primarily about [[https://www.tensorflow.org/programmers_guide/tensors][tensors]]. Although they have a specific mathematical meeting, when working with them it might be easier just to think of them as arrays. Although the tensors look a lot like [[https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html][numpy]] arrays, because TensorFlow defines all its parts before executing anything in a session, while more traditional python libraries like [[http://www.numpy.org/][numpy]] execute each line, all your operations need to be done through tensorflow's [[https://www.tensorflow.org/api_docs/python/][API]], rather than any other python method.
+
+
+** Okay, so what's a tensor, again?
+   A tensor is an abstraction that encompasses the things you learned about in Linear Algebra and physics.
+
+   - A tensor with zero dimensions is a *scalar*
+   - A tensor with one dimension is a *vector*
+   - A tensor with two dimensions is a *matrix*
+
+  A *tensorflow* tensor:
+
+  - is an instance of the [[https://www.tensorflow.org/api_docs/python/tf/Tensor][Tensor]] class
+  - can have elements of type float, integer, string, or boolean, and all the elements of a tensor must be of the same type
+  - can be created and operated on using the tensorflow API
+
+*Some Jargon*
+
+| Term    | Meaning                                     |
+|---------+---------------------------------------------|
+| *rank*  | The number of dimensions of a tensor        |
+| *shape* | The length of each of a tensor's dimensions |
