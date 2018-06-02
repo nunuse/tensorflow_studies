@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Notes as I study tensorflow.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TensorFlow Studies</title>
+<link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="assets/css/ipython.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/nikola_ipython.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
+<link rel="canonical" href="https://github.com/necromuralist/tensorflow_studies/">
+<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script><link rel="prefetch" href="posts/training-a-non-neural-net-model/" type="text/html">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-default navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://github.com/necromuralist/tensorflow_studies/">
+
+                <span id="blog-title">TensorFlow Studies</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="archive.html">Archive</a>
+                </li>
+<li>
+<a href="categories/">Tags</a>
+                </li>
+<li>
+<a href="rss.xml">RSS feed</a>
+            </li>
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Projects <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+<li>
+<a href="machine-learning-projects/">Machine Learning</a>
+                    </li>
+<li>
+<a href="https://necromuralist.github.io/p5_explorations/">P5 Explorations</a>
+                    </li>
+<li>
+<a href="https://necromuralist.github.io/tddmachinelearning/">TDD Machine Learning</a>
+                    </li>
+<li>
+<a href="https://necromuralist.github.io/student_intervention/">Student Intervention Project</a>
+                    </li>
+<li>
+<a href="https://necromuralist.github.io/boston_housing/">Boston Housing Project</a>
+                    </li>
+<li>
+<a href="https://necromuralist.github.io/data_science/">Data Science With Python</a>
+            </li>
+</ul>
+</li>
+</ul>
+<!-- Google custom search --><form method="get" action="https://www.google.com/search" class="navbar-form navbar-right" role="search">
+<div class="form-group">
+<input type="text" name="q" class="form-control" placeholder="Search">
+</div>
+<button type="submit" class="btn btn-primary">
+	<span class="glyphicon glyphicon-search"></span>
+</button>
+<input type="hidden" name="sitesearch" value="https://github.com/necromuralist/tensorflow_studies/">
+</form>
+<!-- End of custom search -->
+
+
+            <ul class="nav navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+
+    
+
+
+    
+<div class="postindex">
+    <article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/training-a-non-neural-net-model/" class="u-url">Training A Non-Neural Net Model</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Cloistered Monkey
+            </span></p>
+            <p class="dateline"><a href="posts/training-a-non-neural-net-model/" rel="bookmark"><time class="published dt-published" datetime="2018-06-01T13:23:09-07:00" title="2018-06-01 13:23">2018-06-01 13:23</time></a></p>
+        </div>
+    </header><div class="e-content entry-content">
+    <div id="outline-container-orgddb802d" class="outline-2">
+<h2 id="orgddb802d">Imports</h2>
+<div class="outline-text-2" id="text-orgddb802d">
+<p>
+This is the tensorflow style guide recommendation to make the code backwards-compatible with python 2.7. I don't think it makes sense anymore, since python 2 is nearing the for-real-this-time end-of-life date (sometime in 2010). Oh, well.
+</p>
+<div class="highlight"><pre><span></span>from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+</pre></div>
+
+<div class="highlight"><pre><span></span># python standard library
+import os
+
+# from pypi
+import tensorflow as tf
+
+import matplotlib.pyplot as pyplot
+import numpy
+import seaborn
+</pre></div>
+
+<div class="highlight"><pre><span></span>% matplotlib inline
+seaborn.set()
+seaborn.set_style("whitegrid", {"axes.grid": False})
+</pre></div>
+</div>
+</div>
+
+<div id="outline-container-org6f31152" class="outline-2">
+<h2 id="org6f31152">A Polynomial Loss Model</h2>
+<div class="outline-text-2" id="text-org6f31152">
+<p>
+We're going to build a model using a polynomial loss function. Here's what it looks like.
+</p>
+
+<div class="highlight"><pre><span></span>x = numpy.linspace(-5, 5)
+y = 2*x**2 + 3*x + 4
+</pre></div>
+
+<div class="highlight"><pre><span></span>figure = pyplot.figure()
+axe = figure.gca()
+axe.set_title("Loss Function")
+plot = pyplot.plot(x, y)
+</pre></div>
+</div>
+
+<div id="outline-container-orgc6b2fd0" class="outline-3">
+<h3 id="orgc6b2fd0">Setup</h3>
+<div class="outline-text-3" id="text-orgc6b2fd0">
+<p>
+The first thing we will do is setup some variables for the training. The <a href="https://www.tensorflow.org/programmers_guide/variables"><code>tensorflow.Variable</code></a> is a tensor (but not a <a href="https://www.tensorflow.org/programmers_guide/tensors"><code>tensorflow.Tensor</code></a>) whose values can be updated. It maintains its value in between <a href="https://www.tensorflow.org/api_docs/python/tf/Session">Sessions</a> so if you run multiple sessions the value wil carry over to each run. Its constructor takes these arguments.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+<th scope="col" class="org-left">Default</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left"><code>initial_value</code></td>
+<td class="org-left">Tensor that represents the starting value</td>
+<td class="org-left">None</td>
+</tr>
+<tr>
+<td class="org-left"><code>trainable</code></td>
+<td class="org-left">If True, added to the collection of variables used by the Optimizers</td>
+<td class="org-left">True</td>
+</tr>
+<tr>
+<td class="org-left"><code>collections</code></td>
+<td class="org-left">List of graph collection keys that the variable gets added to</td>
+<td class="org-left">None</td>
+</tr>
+<tr>
+<td class="org-left"><code>validate_shape</code></td>
+<td class="org-left">If True, the shape of <code>initial_value</code> must be known</td>
+<td class="org-left">True</td>
+</tr>
+<tr>
+<td class="org-left"><code>caching_device</code></td>
+<td class="org-left">Device string describing where to cache the Variable</td>
+<td class="org-left">None</td>
+</tr>
+<tr>
+<td class="org-left"><code>name</code></td>
+<td class="org-left">Name for the variable</td>
+<td class="org-left">Variable + unique string</td>
+</tr>
+<tr>
+<td class="org-left"><code>variable_def</code></td>
+<td class="org-left">Protocol buffer to use to recreate a variable</td>
+<td class="org-left">None</td>
+</tr>
+<tr>
+<td class="org-left"><code>dtype</code></td>
+<td class="org-left">If set, the <code>initial_value</code> will be converted to it</td>
+<td class="org-left">None</td>
+</tr>
+<tr>
+<td class="org-left"><code>expected_shape</code></td>
+<td class="org-left">If set, <code>initial_value</code> should have this shape</td>
+<td class="org-left">None</td>
+</tr>
+<tr>
+<td class="org-left"><code>import_scope</code></td>
+<td class="org-left">Name scope to add if initializing from a protocol buffer</td>
+<td class="org-left">None</td>
+</tr>
+<tr>
+<td class="org-left"><code>constraint</code></td>
+<td class="org-left">Optional function to apply after being updated by an Optimizer</td>
+<td class="org-left">None</td>
+</tr>
+</tbody>
+</table>
+<p>
+First we'll make a trainable variable with an initial value of 0.
+</p>
+
+<div class="highlight"><pre><span></span># Define a trainable variable
+x_var = tf.Variable(0., name='XTrainable')
+</pre></div>
+
+<div class="highlight"><pre><span></span># Define an untrainable variable to hold the global step
+step_var = tf.Variable(0, trainable=False)
+
+# Express loss in terms of the variable
+loss = x_var * x_var - 4.0 * x_var + 5.0
+
+# Find variable value that minimizes loss
+learn_rate = 0.1
+num_epochs = 40
+optimizer = tf.train.GradientDescentOptimizer(learn_rate).minimize(loss, global_step=step_var)
+
+# Initialize variables
+init = tf.global_variables_initializer()
+
+# Create the saver
+saver = tf.train.Saver()
+
+# Create summary data and FileWriter
+summary_op = tf.summary.scalar('x', x_var)
+file_writer = tf.summary.FileWriter('log', graph=tf.get_default_graph())
+
+# Launch session
+with tf.Session() as sess:
+    sess.run(init)
+
+    for epoch in range(num_epochs):
+	_, step, result, summary = sess.run([optimizer, step_var, x_var, summary_op])
+	print('Step %d: Computed result = %f' % (step, result))
+
+	# Print summary data
+	file_writer.add_summary(summary, global_step=step)
+	file_writer.flush()
+
+    # Store variable data
+    saver.save(sess, os.getcwd() + '/output')
+    print('Final x_var: %f' % sess.run(x_var))
+</pre></div>
+</div>
+</div>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/logging-multiple-graphs-summaries-and-saving-graphs/" class="u-url">Logging, Summaries, and Saving Graphs</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Cloistered Monkey
+            </span></p>
+            <p class="dateline"><a href="posts/logging-multiple-graphs-summaries-and-saving-graphs/" rel="bookmark"><time class="published dt-published" datetime="2018-05-29T14:30:05-07:00" title="2018-05-29 14:30">2018-05-29 14:30</time></a></p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>
+This is based on <b>TensorFlow for Dummies</b> and the TensorFlow documentation.
+</p>
+
+<div id="outline-container-org9d23b9c" class="outline-2">
+<h2 id="org9d23b9c">What is this about?</h2>
+<div class="outline-text-2" id="text-org9d23b9c">
+<p>
+This will demonstrate serveral things that might be commonly useful:
+</p>
+
+<ul class="org-ul">
+<li>How to use logging</li>
+<li>How to create multiple graphs</li>
+<li>How to summarize graphs</li>
+<li>How to save graphs to a file</li>
+</ul>
+<div class="highlight"><pre><span></span>import tensorflow
+</pre></div>
+</div>
+</div>
+
+<div id="outline-container-org628bcfa" class="outline-2">
+<h2 id="org628bcfa">How do you use logging?</h2>
+<div class="outline-text-2" id="text-org628bcfa">
+<p>
+The <a href="https://www.tensorflow.org/api_docs/python/tf/logging">TensorFlow logging</a> looks a lot like the regular <a href="https://docs.python.org/3.5/library/logging.html">python logging</a> with some notable helpful additions - you can have print conditionally, you can have it print only a certain number of times, and you can have it print once every so many times that it's called. To enable it you set its verbosity level with the <a href="https://www.tensorflow.org/api_docs/python/tf/logging/set_verbosity">set<sub>verbosity</sub></a> function.
+</p>
+
+<div class="highlight"><pre><span></span>tensorflow.logging.set_verbosity(tensorflow.logging.INFO)
+</pre></div>
+</div>
+</div>
+
+<div id="outline-container-org8a281d0" class="outline-2">
+<h2 id="org8a281d0">Create some tensors</h2>
+<div class="outline-text-2" id="text-org8a281d0">
+<p>
+To actually illustrate how to use this stuff I'll create some tensors to do some linear algebra.
+</p>
+
+<div class="highlight"><pre><span></span>data_1 = tensorflow.random_normal([8], name="random")
+data_2 = tensorflow.linspace(1.0, 100.0, 8, name="LinearSpace")
+dot_product = tensorflow.tensordot(data_1, data_2, axes=1, name="DotProduct")
+</pre></div>
+</div>
+</div>
+
+<div id="outline-container-org32e8662" class="outline-2">
+<h2 id="org32e8662">How do you create summary information?</h2>
+<div class="outline-text-2" id="text-org32e8662">
+<p>
+There are basically two steps. For each of your Tensors, you add it using <a href="https://www.tensorflow.org/api_docs/python/tf/summary/scalar"><code>tensorflow.summary.scalar</code></a>, then you merge the summaries into one using <a href="https://www.tensorflow.org/api_docs/python/tf/summary/merge_all">=tensorflow.summary.merge<sub>all</sub></a>. For my tensors created in the previous section it would look something like this.
+</p>
+
+<div class="highlight"><pre><span></span>tensorflow.summary.scalar("data_1", data_1[0])
+tensorflow.summary.scalar("data_2", data_2[0])
+tensorflow.summary.scalar("dot_product", dot_product)
+
+merged = tensorflow.summary.merge_all()
+</pre></div>
+</div>
+</div>
+
+<div id="outline-container-orge02617e" class="outline-2">
+<h2 id="orge02617e">How do you save the summary?</h2>
+<div class="outline-text-2" id="text-orge02617e">
+<p>
+You can save the summary as a <a href="https://en.wikipedia.org/wiki/Protocol_Buffers">protocol buffer</a> using <a href="https://www.tensorflow.org/api_docs/python/tf/summary/FileWriter"><code>tensorflow.summary.FileWriter</code></a>. This next step will create it and then you use it once you run the session.
+</p>
+
+<div class="highlight"><pre><span></span>writer = tensorflow.summary.FileWriter("/tmp/tensorlog", graph=tensorflow.get_default_graph())
+</pre></div>
+
+<p>
+These are the arguments to the <code>FileWriter</code> constructor.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">logdir</td>
+<td class="org-left">Directory where the file will be saved</td>
+</tr>
+<tr>
+<td class="org-left">graph</td>
+<td class="org-left">The graph to store</td>
+</tr>
+<tr>
+<td class="org-left">max<sub>queue</sub>
+</td>
+<td class="org-left">Size of the event queue</td>
+</tr>
+<tr>
+<td class="org-left">flush<sub>secs</sub>
+</td>
+<td class="org-left">How often to flush pending items to disk</td>
+</tr>
+<tr>
+<td class="org-left">filename<sub>suffix</sub>
+</td>
+<td class="org-left">Suffix to add to the file</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-orgf4fb65d" class="outline-2">
+<h2 id="orgf4fb65d">Okay, but how do you use this?</h2>
+<div class="outline-text-2" id="text-orgf4fb65d">
+<p>
+You run this in a session.
+</p>
+
+<div class="highlight"><pre><span></span>with tensorflow.Session() as session:
+    # run the session
+    outcome, summary = session.run([dot_product, merged])
+
+    # log the outcome
+    tensorflow.logging.info("Dot Product: %s", outcome)
+
+    # print the summary
+    writer.add_summary(summary)
+
+    # force it to dump now
+    writer.flush()
+
+    # Save the graph
+    tensorflow.train.write_graph(session.graph, "/tmp/tensorlog", 'graph_1.dat')
+</pre></div>
+
+<pre class="example">
+INFO:tensorflow:Dot Product: -77.974
+
+</pre>
+</div>
+
+<div id="outline-container-orgbe73849" class="outline-3">
+<h3 id="orgbe73849">Come again?</h3>
+<div class="outline-text-3" id="text-orgbe73849">
+<p>
+In our previous code, we were setting up the code that we want to run. To actually run it you start a <a href="https://www.tensorflow.org/api_docs/python/tf/Session"><code>tensorflow.Session</code></a> and <a href="https://www.tensorflow.org/api_docs/python/tf/Session#run">run</a> the operations in the graph (called <code>dot_product</code> in this case). Since we want a summary, you also pass in the <code>merged</code> summary. the <a href="https://www.tensorflow.org/api_docs/python/tf/summary/FileWriter#add_summary"><code>tensorflow.summary.FileWriter.add_summary</code></a> method adds the summary protocol buffer to the file-writer and the <a href="https://www.tensorflow.org/api_docs/python/tf/summary/FileWriter#flush"><code>tensorflow.summary.FileWriter.flush</code></a> method tells the FileWriter to write it to disk immediately instead of buffering it to memory. Finally the <a href="https://www.tensorflow.org/api_docs/python/tf/train/write_graph"><code>tensorflow.train.write_graph</code></a> function stores the graph as a protocol buffer to disk.
+</p>
+
+<p>
+You may notice that there really isn't anything shown by the summary, it's just being dumped to disk. That's because you look at the summary using <a href="https://www.tensorflow.org/programmers_guide/summaries_and_tensorboard">TensorBoard</a>, which starts a web-server that lets you inspect the summary. You can pass it the directory where we stored the summary when you start it.
+</p>
+
+<pre class="example">
+tensorflow --logdir /tmp/tensorlog
+</pre>
+
+<p>
+This will open a web-server at <code>http://localhost:6006</code> where you can poke around at the graph.
+</p>
+</div>
+</div>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/how-do-you-create-tensors-with-random-values/" class="u-url">How Do You Create Tensors With Random Values?</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Cloistered Monkey
+            </span></p>
+            <p class="dateline"><a href="posts/how-do-you-create-tensors-with-random-values/" rel="bookmark"><time class="published dt-published" datetime="2018-05-28T17:47:20-07:00" title="2018-05-28 17:47">2018-05-28 17:47</time></a></p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>
+Sometimes you want to initialize tensors with random values, like when you initialize a set of weights to train. You could start out with 0's or 1's but often when you don't know what values you want, it's better to start with random numbers. Here are the functions that tensorflow has.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Function</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/random_normal"><code>random_normal</code></a></td>
+<td class="org-left">Outputs random values from the <a href="https://en.wikipedia.org/wiki/Normal_distribution">normal distribution</a>
+</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/truncated_normal"><code>truncated_normal</code></a></td>
+<td class="org-left">Values from the normal distribution within 2 standard deviations from the mean</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/random_uniform"><code>random_uniform</code></a></td>
+<td class="org-left">Random values from a <a href="https://en.wikipedia.org/wiki/Uniform_distribution_(continuous)">uniform distribution</a>
+</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/random_shuffle"><code>random_shuffle</code></a></td>
+<td class="org-left">Randomly shuffles a tensor along its first dimension</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/random_crop"><code>random_crop</code></a></td>
+<td class="org-left">Randomly crop a tensor to a given size</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/multinomial"><code>multinomial</code></a></td>
+<td class="org-left">Random values from a <a href="https://en.wikipedia.org/wiki/Multinomial_distribution">multinomial distribution</a>
+</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/random_gamma"><code>random_gamma</code></a></td>
+<td class="org-left">Samples from each of the <a href="https://en.wikipedia.org/wiki/Gamma_distribution">Gamma distributions</a>
+</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/set_random_seed"><code>set_random_seed</code></a></td>
+<td class="org-left">Sets the graph-level random seed</td>
+</tr>
+</tbody>
+</table>
+<div id="outline-container-org1019add" class="outline-2">
+<h2 id="org1019add">How do you create a tensor with random values that are normally distributed?</h2>
+<div class="outline-text-2" id="text-org1019add">
+<p>
+The <code>tenorflow.random_normal</code> function creates a tensor of random value sampled from the normal distribution.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">shape</td>
+<td class="org-left">The shape of the tensor to create</td>
+</tr>
+<tr>
+<td class="org-left">mean</td>
+<td class="org-left">The center of the distribution</td>
+</tr>
+<tr>
+<td class="org-left">stddev</td>
+<td class="org-left">The standard deviation of the distribution</td>
+</tr>
+<tr>
+<td class="org-left">dtype</td>
+<td class="org-left">The data type of the values</td>
+</tr>
+<tr>
+<td class="org-left">seed</td>
+<td class="org-left">A python integer to set the random seed</td>
+</tr>
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">A label for debugging</td>
+</tr>
+</tbody>
+</table>
+<p>
+By default the <code>random_normal</code> functions samples from the standard normal distribution (so it has a mean of 0 and a standard deviation of 1). Here's how to create a \(3 \times 3\) tensor with values from the standard normal distribution.
+</p>
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">tensorflow</span><span class="o">.</span><span class="n">random_normal</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
+</pre></div>
+
+<pre class="example">
+Tensor("random_normal:0", shape=(3, 3), dtype=float32)
+
+</pre>
+
+<p>
+If you want a different distribution you can pass in the mean and standard deviation. If you want to make it reproducible by others, you can also pass in the seed, althought the <code>set_random_seed</code> function might be better for that.
+</p>
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">tensorflow</span><span class="o">.</span><span class="n">random_normal</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mean</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Bob"</span><span class="p">))</span>
+</pre></div>
+
+<pre class="example">
+Tensor("Bob:0", shape=(3, 3), dtype=float32)
+
+</pre>
+</div>
+
+<div id="outline-container-orge05bdb8" class="outline-3">
+<h3 id="orge05bdb8">How do you create a tensor with random values sampled from the normal distribution but not unlikely values?</h3>
+<div class="outline-text-3" id="text-orge05bdb8">
+<p>
+Because about <a href="https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule">95% of the area under the curve sits within 2 standard deviation from the mean</a>, you can have tensorflow truncate the values that are more than 2 standard deviations from the mean so that you won't get those less likely values. This function takes the same arguments as the <code>random_normal</code> function (so you can't change the truncation value).
+</p>
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">tensorflow</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mean</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"TrunkyMcTrunkface"</span><span class="p">))</span>
+</pre></div>
+
+<pre class="example">
+Tensor("TrunkyMcTrunkface:0", shape=(3, 3), dtype=float32)
+
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3eb2066" class="outline-2">
+<h2 id="org3eb2066">How do I make this randomness reproducible?</h2>
+<div class="outline-text-2" id="text-org3eb2066">
+<p>
+If you want to make the random values reproducible (by yourself or others) you can set the random seed using <code>set_random_seed</code>. This will set the seed for the entire graph. There are two types of seeds to set - the graph-level seed (set here) that will be shared by all the operations and at the operation-level - by passing in the <code>seed</code> argument to <code>random_normal</code> for instance. You can use either or both, but I think in most cases you would want to use the <code>set_random_seed</code> function unless you have a specific reason not to.
+</p>
+
+<p>
+To see this in action, I'll create two random uniform numbers and two random normal numbers.
+</p>
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s2">"Session 1"</span><span class="p">)</span>
+<span class="n">tensorflow</span><span class="o">.</span><span class="n">set_random_seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">uniform</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">normal</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">random_normal</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="k">with</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session_1</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_1</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">uniform</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_1</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">uniform</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_1</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">normal</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_1</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">normal</span><span class="p">))</span>
+</pre></div>
+
+<pre class="example">
+Session 1
+[0.3206401]
+[0.012326]
+[1.018752]
+[-1.0647357]
+
+</pre>
+
+<p>
+Now we'll do this again but in a new session. This should restart the random-number generators, giving us the same 'random' numbers.
+</p>
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s2">"Session 2"</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session_2</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_2</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">uniform</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_2</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">uniform</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_2</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">normal</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_2</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">normal</span><span class="p">))</span>
+</pre></div>
+
+<pre class="example">
+Session 2
+[0.3206401]
+[0.012326]
+[1.018752]
+[-1.0647357]
+
+</pre>
+</div>
+
+<div id="outline-container-orgc2e6dd0" class="outline-3">
+<h3 id="orgc2e6dd0">Does setting the seed have to come before creating the tensors?</h3>
+<div class="outline-text-3" id="text-orgc2e6dd0">
+<p>
+Let's try it and see.
+</p>
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s2">"Session 3"</span><span class="p">)</span>
+<span class="n">uniform</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">normal</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">random_normal</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">tensorflow</span><span class="o">.</span><span class="n">set_random_seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session_3</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_3</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">uniform</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_3</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">uniform</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_3</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">normal</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_3</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">normal</span><span class="p">))</span>
+</pre></div>
+
+<pre class="example">
+Session 3
+[0.16354513]
+[0.8006109]
+[-0.84182554]
+[-2.697645]
+
+</pre>
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s2">"Session 4"</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session_4</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_4</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">uniform</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_4</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">uniform</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_4</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">normal</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session_4</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">normal</span><span class="p">))</span>
+</pre></div>
+
+<pre class="example">
+Session 4
+[0.16354513]
+[0.8006109]
+[-0.84182554]
+[-2.697645]
+
+</pre>
+
+<p>
+Since the numbers put out by both sessions are the same, the answer appears to be no. But wait, why does the second set of numbers not match the first? I'm assuming this is because I'm running this in a notebook… I'll have to look into that more. According to <a href="https://stackoverflow.com/questions/36096386/tensorflow-set-random-seed-not-working">Stack Overflow</a> you either have to call <code>reset_default_graph</code> or set it at the operation-level (i.e. pass in the seed when creating the tensor). Resetting the default graph didn't seem to work when I tried it, but we'll see, I'm not a researcher so this might not be something for me to deal with right now.
+</p>
+</div>
+</div>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/constant-value-tensors/" class="u-url">How do you create a Tensor with constant values?</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Cloistered Monkey
+            </span></p>
+            <p class="dateline"><a href="posts/constant-value-tensors/" rel="bookmark"><time class="published dt-published" datetime="2018-05-28T17:43:55-07:00" title="2018-05-28 17:43">2018-05-28 17:43</time></a></p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>
+These are notes from <b>TensorFlow for Dummies</b> and the <a href="https://www.tensorflow.org/api_guides/python/constant_op#Constant_Value_Tensors">tensorflow documentation</a>.
+</p>
+
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span>
+</pre></div>
+
+<div class="highlight"><pre><span></span>sys.stderr = sys.stdout
+</pre></div>
+
+<p>
+There are various ways to create tensors by calling <code>tensorflow</code> functions with values that you specify. I'll list some of the ways to create tensors with pre-specified values. The <code>Argument</code> is just the main one you pass in to specify the tensor you want, each of the function has others as well, but they are optional. The <code>Returned Tensor Values</code> describes what values are held by the tensor that is returned by the function.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">
+<code>tensorflow</code> Function</th>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Returned Tensor Values</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/constant">constant</a></td>
+<td class="org-left">Value(s)</td>
+<td class="org-left">the value(s) you gave</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/zeros">zeros</a></td>
+<td class="org-left">Shape</td>
+<td class="org-left">all zeros</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/ones">ones</a></td>
+<td class="org-left">Shape</td>
+<td class="org-left">All ones</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/fill">fill</a></td>
+<td class="org-left">Shape, Value</td>
+<td class="org-left">All the given value</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/lin-space">linspace</a></td>
+<td class="org-left">Start, Stop, Steps</td>
+<td class="org-left">linearly spaced floats within the given range</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/range">range</a></td>
+<td class="org-left">Start, Limit, Delta</td>
+<td class="org-left">range of numbers based on start, stop, and delta</td>
+</tr>
+</tbody>
+</table>
+<div id="outline-container-orgd82404e" class="outline-2">
+<h2 id="orgd82404e">How do you create a tensor with a constant value or values in it?</h2>
+<div class="outline-text-2" id="text-orgd82404e">
+<p>
+This is how you would create a tensor whose values never change. These are the arguments <code>tensorflow.constant</code> takes.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">value</td>
+<td class="org-left">value or list of values for the tensor</td>
+</tr>
+<tr>
+<td class="org-left">dtype</td>
+<td class="org-left">Type of the elements for the tensor</td>
+</tr>
+<tr>
+<td class="org-left">shape</td>
+<td class="org-left">Dimensions of the tensor to create</td>
+</tr>
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">name for the tensor</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span>print(tensorflow.constant(3))
+</pre></div>
+
+<pre class="example">
+Tensor("Const:0", shape=(), dtype=int32)
+
+</pre>
+
+<p>
+Passing in the value and the shape seems unnecessary, but the more specific you are, the more built in error handling you have. To actually raise an error on a mismatch, though, you have to pass in an extra <code>True</code> argument to turn on error checking. 
+</p>
+
+<div class="highlight"><pre><span></span>try:
+    tensorflow.constant([1,3], tensorflow.int16, [3], 'Fail', True)
+except TypeError as error:
+    print(error)
+</pre></div>
+
+<pre class="example">
+Expected Tensor's shape: (3,), got (2,).
+
+</pre>
+
+<p>
+Another useful thing about the <code>shape</code> argument is that if you pass in a single value and a shape, then it will create a tensor with the given shape and use the value you passed in to populate it. This would create a \(3 \times 2\) tensor with 5 for all the values.
+</p>
+
+<div class="highlight"><pre><span></span>print(tensorflow.constant(5, shape=[3, 2]))
+</pre></div>
+
+<pre class="example">
+Tensor("Const_6:0", shape=(3, 2), dtype=int32)
+
+</pre>
+</div>
+
+<div id="outline-container-org507eb51" class="outline-3">
+<h3 id="org507eb51">That's nice, but what do you do with it?</h3>
+<div class="outline-text-3" id="text-org507eb51">
+<p>
+The Tensor's we create are used to create a graph (there is one default one so as we create tensors we are adding them to this default graph). Then to actually do something we have to run them in a session. Here's how to do \(4 + 8\) in TensorFlow.
+</p>
+
+<div class="highlight"><pre><span></span>four = tensorflow.constant(4, dtype=tensorflow.float32)
+eight = tensorflow.constant(8, dtype=tensorflow.float32)
+four_plus_eight = four + eight
+
+with tensorflow.Session() as session:
+    print(session.run(four_plus_eight))
+</pre></div>
+
+<pre class="example">
+12.0
+
+</pre>
+
+<p>
+And here's how you do \(4 \times 8\).
+</p>
+
+<div class="highlight"><pre><span></span>four_times_eight = four * eight
+with tensorflow.Session() as session:
+    print(session.run(four_times_eight))
+</pre></div>
+
+<pre class="example">
+32.0
+
+</pre>
+
+<p>
+Excited?
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgbfd8891" class="outline-2">
+<h2 id="orgbfd8891">How do you create a tensor with only zeros or only ones in it?</h2>
+<div class="outline-text-2" id="text-orgbfd8891">
+<p>
+For the <code>zeros</code> and <code>ones</code> functions you only have to pass in the shape, but it does have some other arguments.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">shape</td>
+<td class="org-left">A list with the shape of the tensor</td>
+</tr>
+<tr>
+<td class="org-left">dtype</td>
+<td class="org-left">The data-type you want the values to have</td>
+</tr>
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">A descriptive name to make debugging easier</td>
+</tr>
+</tbody>
+</table>
+<p>
+Here's how to create a \(5 \times 6\) tensor filled with zeros.
+</p>
+<div class="highlight"><pre><span></span>zeros = tensorflow.zeros([5, 6])
+print(zeros)
+</pre></div>
+
+<pre class="example">
+Tensor("zeros_1:0", shape=(5, 6), dtype=float32)
+
+</pre>
+
+<p>
+Here's how to create a tensor with the same shape but filled with ones.
+</p>
+
+<div class="highlight"><pre><span></span>ones = tensorflow.ones([5, 6])
+print(ones)
+</pre></div>
+
+<pre class="example">
+Tensor("ones_2:0", shape=(5, 6), dtype=float32)
+
+</pre>
+
+<p>
+These are really convenience functions that do the same thing as the <code>constant</code> function. Since I'm  creating Tensors, you can use the operations on them as I did earlier.
+</p>
+
+<p>
+If you multiply the ones by a scalar it will transmit it across the cells.
+</p>
+
+<div class="highlight"><pre><span></span>with tensorflow.Session() as session:
+    print(session.run(four * ones))
+</pre></div>
+
+<pre class="example">
+[[4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]]
+
+</pre>
+
+<p>
+Since 0 is the identifier for addition we can do a similar thing to the zeros.
+</p>
+<div class="highlight"><pre><span></span>with tensorflow.Session() as session:
+    print(session.run(four + zeros))
+</pre></div>
+
+<pre class="example">
+[[4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]]
+
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgb28fa1c" class="outline-2">
+<h2 id="orgb28fa1c">How do you create a tensor filled with the same value?</h2>
+<div class="outline-text-2" id="text-orgb28fa1c">
+<p>
+The <code>fill</code> function creates a tensor with all the values and data-types being the same as the value you give it, so there's no <code>dtype</code> argument. I'm not sure when this would be preferable to using <code>constant</code>, maybe it's just a convenience function
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">dims</td>
+<td class="org-left">The shape of the tensor</td>
+</tr>
+<tr>
+<td class="org-left">value</td>
+<td class="org-left">The value to fill the tensor with</td>
+</tr>
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">Descriptive name for debugging</td>
+</tr>
+</tbody>
+</table>
+<p>
+The <b>Dummies</b> book says that <code>fill</code> only works with 32-bit floating point numbers, but that doesn't appear to be the case at the momemnt.
+</p>
+
+<div class="highlight"><pre><span></span>print(tensorflow.fill([5, 6], 5))
+</pre></div>
+
+<pre class="example">
+Tensor("Fill_1:0", shape=(5, 6), dtype=int32)
+
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgabbfab1" class="outline-2">
+<h2 id="orgabbfab1">How do you create a tensor of evenly spaced numbers?</h2>
+<div class="outline-text-2" id="text-orgabbfab1">
+<p>
+The <code>linspace</code> (linear space) function will create a tensor with numbers evenly spaced from some start value to some end value. The start and stop values you give it are always the first and last values in the tensor.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">start</td>
+<td class="org-left">The first number in the sequence</td>
+</tr>
+<tr>
+<td class="org-left">stop</td>
+<td class="org-left">The last number in the sequence</td>
+</tr>
+<tr>
+<td class="org-left">num</td>
+<td class="org-left">The number of numbers in the sequence</td>
+</tr>
+</tbody>
+</table>
+<p>
+Here's how to create a tensor that represents a sequence from 5 to 13 with 7 numbers in the sequence.
+</p>
+
+<div class="highlight"><pre><span></span>print(tensorflow.linspace(5.0, 13.0, 7))
+</pre></div>
+
+<pre class="example">
+Tensor("LinSpace_12:0", shape=(7,), dtype=float32)
+
+</pre>
+
+
+<p>
+Note that the number types are important here. The <code>start</code> and <code>stop</code> have to be floating point numbers (so use a decmal point) and them <code>num</code> has to be an integer (so don't put a decimal point).
+</p>
+
+<div class="highlight"><pre><span></span>try:
+    tensorflow.linspace(5, 13, 7)
+except TypeError as error:
+    print(error)
+</pre></div>
+
+<pre class="example">
+Value passed to parameter 'start' has DataType int32 not in list of allowed values: bfloat16, float32, float64
+
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org74aa723" class="outline-2">
+<h2 id="org74aa723">How do you create a tensor with a range of numbers with a specific amount between each step?</h2>
+<div class="outline-text-2" id="text-org74aa723">
+<p>
+The <code>range</code> function creates a tensor works similarly to <a href="https://docs.python.org/3.5/library/functions.html#func-range">ipython's range</a>, you give a start value, an upper limit value and a step-size (what <b>tensorflow</b> calls a delta) and it creates values from the start up to the upper limit (but not including it).
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">start</td>
+<td class="org-left">The first number in the range</td>
+</tr>
+<tr>
+<td class="org-left">limit</td>
+<td class="org-left">The upper bound for the range</td>
+</tr>
+<tr>
+<td class="org-left">delta</td>
+<td class="org-left">The amount to add to each previous value to create the range</td>
+</tr>
+<tr>
+<td class="org-left">dtype</td>
+<td class="org-left">The data-type for the values in the range</td>
+</tr>
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">A label to make debugging easier</td>
+</tr>
+</tbody>
+</table>
+<p>
+This makes a range from 5 to 8 with steps of 2. By default it will use the data-type of the values you pass in, so I'll cast it to a float, just to be different.
+</p>
+
+<div class="highlight"><pre><span></span>print(tensorflow.range(5, 8, 2, dtype=tensorflow.float32, name="Ted"))
+</pre></div>
+
+<pre class="example">
+Tensor("Ted_1:0", shape=(2,), dtype=float32)
+
+</pre>
+</div>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/what-is-a-tensor/" class="u-url">What is a tensor?</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Cloistered Monkey
+            </span></p>
+            <p class="dateline"><a href="posts/what-is-a-tensor/" rel="bookmark"><time class="published dt-published" datetime="2018-05-26T18:28:55-07:00" title="2018-05-26 18:28">2018-05-26 18:28</time></a></p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>
+These are notes from <b>TensorFlow for Dummies</b> and the <a href="https://www.tensorflow.org/api_guides/python/constant_op#Constant_Value_Tensors">tensorflow documentation</a>.
+</p>
+
+<div id="outline-container-org28b8e6a" class="outline-2">
+<h2 id="org28b8e6a">What are tensors?</h2>
+<div class="outline-text-2" id="text-org28b8e6a">
+<p>
+This is primarily about <a href="https://www.tensorflow.org/programmers_guide/tensors">tensors</a>. Although they have a specific mathematical meeting, when working with them it might be easier just to think of them as arrays. Although the tensors look a lot like <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html">numpy</a> arrays, because TensorFlow defines all its parts before executing anything in a session, while more traditional python libraries like <a href="http://www.numpy.org/">numpy</a> execute each line, all your operations need to be done through tensorflow's <a href="https://www.tensorflow.org/api_docs/python/">API</a>, rather than any other python method.
+</p>
+</div>
+
+
+<div id="outline-container-orgb9e0eca" class="outline-3">
+<h3 id="orgb9e0eca">Okay, so what's a tensor, again?</h3>
+<div class="outline-text-3" id="text-orgb9e0eca">
+<p>
+A tensor is an abstraction that encompasses the things you learned about in Linear Algebra and physics.
+</p>
+
+<ul class="org-ul">
+<li>A tensor with zero dimensions is a <b>scalar</b>
+</li>
+<li>A tensor with one dimension is a <b>vector</b>
+</li>
+<li>A tensor with two dimensions is a <b>matrix</b>
+</li>
+</ul>
+<p>
+A <b>tensorflow</b> tensor:
+</p>
+
+<ul class="org-ul">
+<li>is an instance of the <a href="https://www.tensorflow.org/api_docs/python/tf/Tensor">Tensor</a> class</li>
+<li>can have elements of type float, integer, string, or boolean, and all the elements of a tensor must be of the same type</li>
+<li>can be created and operated on using the tensorflow API</li>
+</ul>
+<p>
+<b>Some Jargon</b>
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Term</th>
+<th scope="col" class="org-left">Meaning</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left"><b>rank</b></td>
+<td class="org-left">The number of dimensions of a tensor</td>
+</tr>
+<tr>
+<td class="org-left"><b>shape</b></td>
+<td class="org-left">The length of each of a tensor's dimensions</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/hellow-tensorflow/" class="u-url">Hello Tensorflow</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Cloistered Monkey
+            </span></p>
+            <p class="dateline"><a href="posts/hellow-tensorflow/" rel="bookmark"><time class="published dt-published" datetime="2018-05-26T15:45:39-07:00" title="2018-05-26 15:45">2018-05-26 15:45</time></a></p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>
+This is largely from <b>TensorFlow for Dummies</b>.
+</p>
+
+<div id="outline-container-org9a2616f" class="outline-2">
+<h2 id="org9a2616f">Hello</h2>
+<div class="outline-text-2" id="text-org9a2616f">
+<p>
+This is a <a href="https://en.wikipedia.org/wiki/%22Hello,_World!%22_program">hello-world</a> for tensorflow, it will create a tensor with our message and then print it when the graph is executed.
+</p>
+</div>
+<div id="outline-container-org01e6745" class="outline-3">
+<h3 id="org01e6745">Import</h3>
+<div class="outline-text-3" id="text-org01e6745">
+<p>
+We're just going to import <a href="https://www.tensorflow.org/">tensorflow</a>.
+</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span>
+</pre></div>
+</div>
+</div>
+
+<div id="outline-container-org569ec71" class="outline-3">
+<h3 id="org569ec71">Create the Tensor</h3>
+<div class="outline-text-3" id="text-org569ec71">
+<p>
+We're going to use <a href="https://www.tensorflow.org/api_docs/python/tf/string_join"><code>string_join</code></a> which takes a lists of strings (it will consider each one a separate <a href="https://www.tensorflow.org/programmers_guide/tensors">tensor</a>) and creates a single <a href="https://en.wikipedia.org/wiki/Tensor">tensor</a> that we're going to store in the <code>message</code> variable.
+</p>
+<div class="highlight"><pre><span></span><span class="n">message</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">string_join</span><span class="p">([</span><span class="s1">'Hello '</span><span class="p">,</span> <span class="s1">'TensorFlow!'</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+
+<div id="outline-container-orgb9a052f" class="outline-3">
+<h3 id="orgb9a052f">Running the Session</h3>
+<div class="outline-text-3" id="text-orgb9a052f">
+<p>
+When you create a tensor it doesn't execute the calculations, it just defines what is going to be used to run the execution. To actually execute it you need to create a <a href="https://www.tensorflow.org/api_docs/python/tf/Session">Session</a> and then <a href="https://www.tensorflow.org/api_docs/python/tf/Session#run">run</a> it.
+</p>
+
+<div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+</pre></div>
+
+<pre class="example">
+: b'Hello TensorFlow!'
+</pre>
+
+<p>
+The first argument to <code>run</code> can be any single graph element or list of graph elements that you want tensorflow to execute.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org23e5aa3" class="outline-2">
+<h2 id="org23e5aa3">Style</h2>
+<div class="outline-text-2" id="text-org23e5aa3">
+<p>
+Google has a <a href="https://www.tensorflow.org/community/style_guide">style guide</a> specifically for TensorFlow. It says that you should follow the <a href="https://pep8.readthedocs.io/en/release-1.7.x/">PEP 8</a> style guide except where they think they know better. The exceptions are:
+</p>
+
+<ul class="org-ul">
+<li>2 spaces instead of 4 for indentation</li>
+<li>Make everything compatible with both python 2 and 3</li>
+</ul>
+<p>
+This means that every file should have these imports in them:
+</p>
+
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+</pre></div>
+
+<p>
+And you should use <a href="https://pythonhosted.org/six/">six</a> or something like it to make other compatibility changes.
+</p>
+</div>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/bibliography/" class="u-url">Bibliography</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Cloistered Monkey
+            </span></p>
+            <p class="dateline"><a href="posts/bibliography/" rel="bookmark"><time class="published dt-published" datetime="2018-05-26T13:49:14-07:00" title="2018-05-26 13:49">2018-05-26 13:49</time></a></p>
+        </div>
+    </header><div class="e-content entry-content">
+    <div id="outline-container-org5734e19" class="outline-2">
+<h2 id="org5734e19">Books</h2>
+<div class="outline-text-2" id="text-org5734e19">
+<p>
+[B1] Scarpino, Matthew. Tensorflow for Dummies. 1st edition. Indianapolis, IN: John Wiley and Sons, 2018.
+</p>
+</div>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/the-development-of-machine-learning/" class="u-url">The Development of Machine Learning (as it relates to TensorFlow)</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Cloistered Monkey
+            </span></p>
+            <p class="dateline"><a href="posts/the-development-of-machine-learning/" rel="bookmark"><time class="published dt-published" datetime="2018-05-26T13:45:28-07:00" title="2018-05-26 13:45">2018-05-26 13:45</time></a></p>
+        </div>
+    </header><div class="e-content entry-content">
+    <div id="outline-container-orgcbf2e04" class="outline-2">
+<h2 id="orgcbf2e04">A Brief Timeline</h2>
+<div class="outline-text-2" id="text-orgcbf2e04">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-right">
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-left">Person</th>
+<th scope="col" class="org-left">Event</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-right">1763</td>
+<td class="org-left"><a href="https://en.wikipedia.org/wiki/Thomas_Bayes">Thomas Bayes</a></td>
+<td class="org-left">
+<a href="https://en.wikipedia.org/wiki/An_Essay_towards_solving_a_Problem_in_the_Doctrine_of_Chances">The Underpinning of Bayes' Theorem</a> is published</td>
+</tr>
+<tr>
+<td class="org-right">1803</td>
+<td class="org-left"><a href="https://en.wikipedia.org/wiki/Adrien-Marie_Legendre">Adrian-Marie Legendre</a></td>
+<td class="org-left">Discovers the <a href="https://en.wikipedia.org/wiki/Least_squares">method of least squares</a>
+</td>
+</tr>
+<tr>
+<td class="org-right">1894</td>
+<td class="org-left"><a href="https://en.wikipedia.org/wiki/Francis_Galton">Francis Galton</a></td>
+<td class="org-left">Uses <a href="https://en.wikipedia.org/wiki/Regression_toward_the_mean">regression to the mean</a> to study inherited traits</td>
+</tr>
+<tr>
+<td class="org-right">1943</td>
+<td class="org-left">
+<a href="https://en.wikipedia.org/wiki/Warren_Sturgis_McCulloch">McCulloch</a> and <a href="https://en.wikipedia.org/wiki/Warren_Sturgis_McCulloch">Pitts</a>
+</td>
+<td class="org-left">Create the first <a href="https://en.wikipedia.org/wiki/Artificial_neuron">artificial neuron</a> model</td>
+</tr>
+<tr>
+<td class="org-right">1957</td>
+<td class="org-left"><a href="https://en.wikipedia.org/wiki/Frank_Rosenblatt">Frank Rosenblatt</a></td>
+<td class="org-left">Creates the <a href="https://en.wikipedia.org/wiki/Perceptron">perceptron</a>
+</td>
+</tr>
+<tr>
+<td class="org-right">1963</td>
+<td class="org-left">
+<a href="https://en.wikipedia.org/wiki/Vladimir_Vapnik">Vapnik</a> and <a href="https://en.wikipedia.org/wiki/Alexey_Chervonenkis">Chervonenkis</a>
+</td>
+<td class="org-left">Invent the <a href="https://en.wikipedia.org/wiki/Support_vector_machine">Support Vector Machine algorithm</a>
+</td>
+</tr>
+<tr>
+<td class="org-right">1965</td>
+<td class="org-left">
+<a href="https://en.wikipedia.org/wiki/Alexey_Ivakhnenko">Ivakhnenko</a> and Lapa</td>
+<td class="org-left">Demonstrate <a href="https://en.wikipedia.org/wiki/Multilayer_perceptron">multilayer perceptron</a> with non-linear activation</td>
+</tr>
+<tr>
+<td class="org-right">1980</td>
+<td class="org-left">Kunihiko Fukushima</td>
+<td class="org-left">Proposes the <a href="https://en.wikipedia.org/wiki/Neocognitron">neocognitron</a>, a multilayer neural network for image recognition</td>
+</tr>
+<tr>
+<td class="org-right">1974</td>
+<td class="org-left"><a href="https://en.wikipedia.org/wiki/Paul_Werbos">Paul Werbos</a></td>
+<td class="org-left">Uses <a href="https://en.wikipedia.org/wiki/Backpropagation">backpropagation</a> to train a <a href="https://en.wikipedia.org/wiki/Artificial_neural_network">neural network</a>
+</td>
+</tr>
+<tr>
+<td class="org-right">1982</td>
+<td class="org-left"><a href="https://en.wikipedia.org/wiki/John_Hopfield">John Hopfield</a></td>
+<td class="org-left">Developes the <a href="https://en.wikipedia.org/wiki/Hopfield_network">Hopfield network</a>
+</td>
+</tr>
+<tr>
+<td class="org-right">1986</td>
+<td class="org-left">
+<a href="https://en.wikipedia.org/wiki/Terry_Sejnowski">Sejnowski</a> and Rosenberg</td>
+<td class="org-left">Develop <a href="https://en.wikipedia.org/wiki/NETtalk_(artificial_neural_network)">NETtalk</a>, an Neural Network that learned how to pronounce words</td>
+</tr>
+<tr>
+<td class="org-right">1998</td>
+<td class="org-left"><a href="https://en.wikipedia.org/wiki/Yann_LeCun">Yann LeCun</a></td>
+<td class="org-left">Trains a <a href="https://en.wikipedia.org/wiki/Convolutional_neural_network">Convolutional Neural Network</a> (the LeNet-5) to recognize digits</td>
+</tr>
+<tr>
+<td class="org-right">2002</td>
+<td class="org-left">Collobert, Kavukcuoglu, and Farabet</td>
+<td class="org-left">Release the <a href="https://en.wikipedia.org/wiki/Torch_(machine_learning)">Torch framework</a>
+</td>
+</tr>
+<tr>
+<td class="org-right">2006</td>
+<td class="org-left">Netflix</td>
+<td class="org-left">Offers <a href="https://en.wikipedia.org/wiki/Netflix_Prize">$1 Million prize</a> to help with movie recommendations</td>
+</tr>
+<tr>
+<td class="org-right">2014</td>
+<td class="org-left">
+<a href="https://en.wikipedia.org/wiki/Ian_Goodfellow">Ian Goodfellow</a>, et al.</td>
+<td class="org-left">Invent <a href="https://en.wikipedia.org/wiki/Generative_adversarial_network">Generative Adversarial Networks</a>
+</td>
+</tr>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-left">Francis Chollet</td>
+<td class="org-left">Releases <a href="https://en.wikipedia.org/wiki/Keras">Keras</a> for deep neural network development</td>
+</tr>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-left"><a href="https://en.wikipedia.org/wiki/Google_Brain">Google Brain</a></td>
+<td class="org-left">Releases <a href="https://en.wikipedia.org/wiki/TensorFlow">TensorFlow</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org76afb4a" class="outline-2">
+<h2 id="org76afb4a">Sources</h2>
+<div class="outline-text-2" id="text-org76afb4a">
+<ul class="org-ul">
+<li>Scarpino, Matthew. Tensorflow for Dummies. 1st edition. Indianapolis, IN: John Wiley and Sons, 2018.</li>
+<li>“Timeline of Artificial Intelligence.” Wikipedia, May 17, 2018. <a href="https://en.wikipedia.org/w/index.php?title=Timeline_of_artificial_intelligence&amp;oldid=841669863">https://en.wikipedia.org/w/index.php?title=Timeline_of_artificial_intelligence&amp;oldid=841669863</a>.</li>
+<li>“Timeline of Machine Learning - Wikipedia.” Accessed May 26, 2018. <a href="https://en.wikipedia.org/wiki/Timeline_of_machine_learning">https://en.wikipedia.org/wiki/Timeline_of_machine_learning</a>.</li>
+</ul>
+</div>
+</div>
+    </div>
+    </article>
+</div>
+
+
+
+
+
+
+
+        </div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:necromuralist@protonmail.com">Cloistered Monkey</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png"></a><br>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

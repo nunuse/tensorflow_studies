@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Creating Tensors with constant values.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How do you create a Tensor with constant values? | TensorFlow Studies</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/ipython.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/nikola_ipython.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://github.com/necromuralist/tensorflow_studies/posts/constant-value-tensors/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script><meta name="author" content="Cloistered Monkey">
+<link rel="prev" href="../what-is-a-tensor/" title="What is a tensor?" type="text/html">
+<link rel="next" href="../how-do-you-create-tensors-with-random-values/" title="How Do You Create Tensors With Random Values?" type="text/html">
+<meta property="og:site_name" content="TensorFlow Studies">
+<meta property="og:title" content="How do you create a Tensor with constant values?">
+<meta property="og:url" content="https://github.com/necromuralist/tensorflow_studies/posts/constant-value-tensors/">
+<meta property="og:description" content="Creating Tensors with constant values.">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2018-05-28T17:43:55-07:00">
+<meta property="article:tag" content="tensorflow dummies">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-default navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://github.com/necromuralist/tensorflow_studies/">
+
+                <span id="blog-title">TensorFlow Studies</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+            </li>
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Projects <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+<li>
+<a href="../../machine-learning-projects/">Machine Learning</a>
+                    </li>
+<li>
+<a href="https://necromuralist.github.io/p5_explorations/">P5 Explorations</a>
+                    </li>
+<li>
+<a href="https://necromuralist.github.io/tddmachinelearning/">TDD Machine Learning</a>
+                    </li>
+<li>
+<a href="https://necromuralist.github.io/student_intervention/">Student Intervention Project</a>
+                    </li>
+<li>
+<a href="https://necromuralist.github.io/boston_housing/">Boston Housing Project</a>
+                    </li>
+<li>
+<a href="https://necromuralist.github.io/data_science/">Data Science With Python</a>
+            </li>
+</ul>
+</li>
+</ul>
+<!-- Google custom search --><form method="get" action="https://www.google.com/search" class="navbar-form navbar-right" role="search">
+<div class="form-group">
+<input type="text" name="q" class="form-control" placeholder="Search">
+</div>
+<button type="submit" class="btn btn-primary">
+	<span class="glyphicon glyphicon-search"></span>
+</button>
+<input type="hidden" name="sitesearch" value="https://github.com/necromuralist/tensorflow_studies/">
+</form>
+<!-- End of custom search -->
+
+
+            <ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.org" id="sourcelink">Source</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">How do you create a Tensor with constant values?</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                    Cloistered Monkey
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2018-05-28T17:43:55-07:00" itemprop="datePublished" title="2018-05-28 17:43">2018-05-28 17:43</time></a></p>
+            
+        <p class="sourceline"><a href="index.org" class="sourcelink">Source</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>
+These are notes from <b>TensorFlow for Dummies</b> and the <a href="https://www.tensorflow.org/api_guides/python/constant_op#Constant_Value_Tensors">tensorflow documentation</a>.
+</p>
+
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span>
+</pre></div>
+
+<div class="highlight"><pre><span></span>sys.stderr = sys.stdout
+</pre></div>
+
+<p>
+There are various ways to create tensors by calling <code>tensorflow</code> functions with values that you specify. I'll list some of the ways to create tensors with pre-specified values. The <code>Argument</code> is just the main one you pass in to specify the tensor you want, each of the function has others as well, but they are optional. The <code>Returned Tensor Values</code> describes what values are held by the tensor that is returned by the function.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">
+<code>tensorflow</code> Function</th>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Returned Tensor Values</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/constant">constant</a></td>
+<td class="org-left">Value(s)</td>
+<td class="org-left">the value(s) you gave</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/zeros">zeros</a></td>
+<td class="org-left">Shape</td>
+<td class="org-left">all zeros</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/ones">ones</a></td>
+<td class="org-left">Shape</td>
+<td class="org-left">All ones</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/fill">fill</a></td>
+<td class="org-left">Shape, Value</td>
+<td class="org-left">All the given value</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/lin-space">linspace</a></td>
+<td class="org-left">Start, Stop, Steps</td>
+<td class="org-left">linearly spaced floats within the given range</td>
+</tr>
+<tr>
+<td class="org-left"><a href="https://www.tensorflow.org/api_docs/python/tf/range">range</a></td>
+<td class="org-left">Start, Limit, Delta</td>
+<td class="org-left">range of numbers based on start, stop, and delta</td>
+</tr>
+</tbody>
+</table>
+<div id="outline-container-orgd82404e" class="outline-2">
+<h2 id="orgd82404e">How do you create a tensor with a constant value or values in it?</h2>
+<div class="outline-text-2" id="text-orgd82404e">
+<p>
+This is how you would create a tensor whose values never change. These are the arguments <code>tensorflow.constant</code> takes.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">value</td>
+<td class="org-left">value or list of values for the tensor</td>
+</tr>
+<tr>
+<td class="org-left">dtype</td>
+<td class="org-left">Type of the elements for the tensor</td>
+</tr>
+<tr>
+<td class="org-left">shape</td>
+<td class="org-left">Dimensions of the tensor to create</td>
+</tr>
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">name for the tensor</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span>print(tensorflow.constant(3))
+</pre></div>
+
+<pre class="example">
+Tensor("Const:0", shape=(), dtype=int32)
+
+</pre>
+
+<p>
+Passing in the value and the shape seems unnecessary, but the more specific you are, the more built in error handling you have. To actually raise an error on a mismatch, though, you have to pass in an extra <code>True</code> argument to turn on error checking. 
+</p>
+
+<div class="highlight"><pre><span></span>try:
+    tensorflow.constant([1,3], tensorflow.int16, [3], 'Fail', True)
+except TypeError as error:
+    print(error)
+</pre></div>
+
+<pre class="example">
+Expected Tensor's shape: (3,), got (2,).
+
+</pre>
+
+<p>
+Another useful thing about the <code>shape</code> argument is that if you pass in a single value and a shape, then it will create a tensor with the given shape and use the value you passed in to populate it. This would create a \(3 \times 2\) tensor with 5 for all the values.
+</p>
+
+<div class="highlight"><pre><span></span>print(tensorflow.constant(5, shape=[3, 2]))
+</pre></div>
+
+<pre class="example">
+Tensor("Const_6:0", shape=(3, 2), dtype=int32)
+
+</pre>
+</div>
+
+<div id="outline-container-org507eb51" class="outline-3">
+<h3 id="org507eb51">That's nice, but what do you do with it?</h3>
+<div class="outline-text-3" id="text-org507eb51">
+<p>
+The Tensor's we create are used to create a graph (there is one default one so as we create tensors we are adding them to this default graph). Then to actually do something we have to run them in a session. Here's how to do \(4 + 8\) in TensorFlow.
+</p>
+
+<div class="highlight"><pre><span></span>four = tensorflow.constant(4, dtype=tensorflow.float32)
+eight = tensorflow.constant(8, dtype=tensorflow.float32)
+four_plus_eight = four + eight
+
+with tensorflow.Session() as session:
+    print(session.run(four_plus_eight))
+</pre></div>
+
+<pre class="example">
+12.0
+
+</pre>
+
+<p>
+And here's how you do \(4 \times 8\).
+</p>
+
+<div class="highlight"><pre><span></span>four_times_eight = four * eight
+with tensorflow.Session() as session:
+    print(session.run(four_times_eight))
+</pre></div>
+
+<pre class="example">
+32.0
+
+</pre>
+
+<p>
+Excited?
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgbfd8891" class="outline-2">
+<h2 id="orgbfd8891">How do you create a tensor with only zeros or only ones in it?</h2>
+<div class="outline-text-2" id="text-orgbfd8891">
+<p>
+For the <code>zeros</code> and <code>ones</code> functions you only have to pass in the shape, but it does have some other arguments.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">shape</td>
+<td class="org-left">A list with the shape of the tensor</td>
+</tr>
+<tr>
+<td class="org-left">dtype</td>
+<td class="org-left">The data-type you want the values to have</td>
+</tr>
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">A descriptive name to make debugging easier</td>
+</tr>
+</tbody>
+</table>
+<p>
+Here's how to create a \(5 \times 6\) tensor filled with zeros.
+</p>
+<div class="highlight"><pre><span></span>zeros = tensorflow.zeros([5, 6])
+print(zeros)
+</pre></div>
+
+<pre class="example">
+Tensor("zeros_1:0", shape=(5, 6), dtype=float32)
+
+</pre>
+
+<p>
+Here's how to create a tensor with the same shape but filled with ones.
+</p>
+
+<div class="highlight"><pre><span></span>ones = tensorflow.ones([5, 6])
+print(ones)
+</pre></div>
+
+<pre class="example">
+Tensor("ones_2:0", shape=(5, 6), dtype=float32)
+
+</pre>
+
+<p>
+These are really convenience functions that do the same thing as the <code>constant</code> function. Since I'm  creating Tensors, you can use the operations on them as I did earlier.
+</p>
+
+<p>
+If you multiply the ones by a scalar it will transmit it across the cells.
+</p>
+
+<div class="highlight"><pre><span></span>with tensorflow.Session() as session:
+    print(session.run(four * ones))
+</pre></div>
+
+<pre class="example">
+[[4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]]
+
+</pre>
+
+<p>
+Since 0 is the identifier for addition we can do a similar thing to the zeros.
+</p>
+<div class="highlight"><pre><span></span>with tensorflow.Session() as session:
+    print(session.run(four + zeros))
+</pre></div>
+
+<pre class="example">
+[[4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]
+ [4. 4. 4. 4. 4. 4.]]
+
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgb28fa1c" class="outline-2">
+<h2 id="orgb28fa1c">How do you create a tensor filled with the same value?</h2>
+<div class="outline-text-2" id="text-orgb28fa1c">
+<p>
+The <code>fill</code> function creates a tensor with all the values and data-types being the same as the value you give it, so there's no <code>dtype</code> argument. I'm not sure when this would be preferable to using <code>constant</code>, maybe it's just a convenience function
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">dims</td>
+<td class="org-left">The shape of the tensor</td>
+</tr>
+<tr>
+<td class="org-left">value</td>
+<td class="org-left">The value to fill the tensor with</td>
+</tr>
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">Descriptive name for debugging</td>
+</tr>
+</tbody>
+</table>
+<p>
+The <b>Dummies</b> book says that <code>fill</code> only works with 32-bit floating point numbers, but that doesn't appear to be the case at the momemnt.
+</p>
+
+<div class="highlight"><pre><span></span>print(tensorflow.fill([5, 6], 5))
+</pre></div>
+
+<pre class="example">
+Tensor("Fill_1:0", shape=(5, 6), dtype=int32)
+
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgabbfab1" class="outline-2">
+<h2 id="orgabbfab1">How do you create a tensor of evenly spaced numbers?</h2>
+<div class="outline-text-2" id="text-orgabbfab1">
+<p>
+The <code>linspace</code> (linear space) function will create a tensor with numbers evenly spaced from some start value to some end value. The start and stop values you give it are always the first and last values in the tensor.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">start</td>
+<td class="org-left">The first number in the sequence</td>
+</tr>
+<tr>
+<td class="org-left">stop</td>
+<td class="org-left">The last number in the sequence</td>
+</tr>
+<tr>
+<td class="org-left">num</td>
+<td class="org-left">The number of numbers in the sequence</td>
+</tr>
+</tbody>
+</table>
+<p>
+Here's how to create a tensor that represents a sequence from 5 to 13 with 7 numbers in the sequence.
+</p>
+
+<div class="highlight"><pre><span></span>print(tensorflow.linspace(5.0, 13.0, 7))
+</pre></div>
+
+<pre class="example">
+Tensor("LinSpace_12:0", shape=(7,), dtype=float32)
+
+</pre>
+
+
+<p>
+Note that the number types are important here. The <code>start</code> and <code>stop</code> have to be floating point numbers (so use a decmal point) and them <code>num</code> has to be an integer (so don't put a decimal point).
+</p>
+
+<div class="highlight"><pre><span></span>try:
+    tensorflow.linspace(5, 13, 7)
+except TypeError as error:
+    print(error)
+</pre></div>
+
+<pre class="example">
+Value passed to parameter 'start' has DataType int32 not in list of allowed values: bfloat16, float32, float64
+
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org74aa723" class="outline-2">
+<h2 id="org74aa723">How do you create a tensor with a range of numbers with a specific amount between each step?</h2>
+<div class="outline-text-2" id="text-org74aa723">
+<p>
+The <code>range</code> function creates a tensor works similarly to <a href="https://docs.python.org/3.5/library/functions.html#func-range">ipython's range</a>, you give a start value, an upper limit value and a step-size (what <b>tensorflow</b> calls a delta) and it creates values from the start up to the upper limit (but not including it).
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">start</td>
+<td class="org-left">The first number in the range</td>
+</tr>
+<tr>
+<td class="org-left">limit</td>
+<td class="org-left">The upper bound for the range</td>
+</tr>
+<tr>
+<td class="org-left">delta</td>
+<td class="org-left">The amount to add to each previous value to create the range</td>
+</tr>
+<tr>
+<td class="org-left">dtype</td>
+<td class="org-left">The data-type for the values in the range</td>
+</tr>
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">A label to make debugging easier</td>
+</tr>
+</tbody>
+</table>
+<p>
+This makes a range from 5 to 8 with steps of 2. By default it will use the data-type of the values you pass in, so I'll cast it to a float, just to be different.
+</p>
+
+<div class="highlight"><pre><span></span>print(tensorflow.range(5, 8, 2, dtype=tensorflow.float32, name="Ted"))
+</pre></div>
+
+<pre class="example">
+Tensor("Ted_1:0", shape=(2,), dtype=float32)
+
+</pre>
+</div>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/tensorflow-dummies/" rel="tag">tensorflow dummies</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../what-is-a-tensor/" rel="prev" title="What is a tensor?">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../how-do-you-create-tensors-with-random-values/" rel="next" title="How Do You Create Tensors With Random Values?">Next post</a>
+            </li>
+        </ul></nav></aside></article>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:necromuralist@protonmail.com">Cloistered Monkey</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png"></a><br>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>
