@@ -10,26 +10,27 @@
 #+END_COMMENT
 
 * Imports
-  This is the tensorflow style guide recommendation to make the code backwards-compatible with python 2.7. I don't think it makes sense anymore, since python 2 is nearing the for-real-this-time end-of-life date (sometime in 2010). Oh, well.
-#+BEGIN_SRC ipython :session training :results none
+  This is the tensorflow style guide recommendation to make the code backwards-compatible with python 2.7. I don't think it makes sense here, since I don't use python 0 and python 2 is nearing the for-real-this-time end-of-life date (sometime in 2010) so I don't think I will, but I guess it's a safer practice. Oh, well.
+
+#+BEGIN_SRC python :session training :results none
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 #+END_SRC
 
-#+BEGIN_SRC ipython :session training :results none
+#+BEGIN_SRC python :session training :results none
 # python standard library
 import os
 
 # from pypi
-import tensorflow as tf
+import tensorflow
 
 import matplotlib.pyplot as pyplot
 import numpy
 import seaborn
 #+END_SRC
 
-#+BEGIN_SRC ipython :session training :results none
+#+BEGIN_SRC python :session training :results none
 % matplotlib inline
 seaborn.set()
 seaborn.set_style("whitegrid", {"axes.grid": False})
@@ -38,12 +39,12 @@ seaborn.set_style("whitegrid", {"axes.grid": False})
 * A Polynomial Loss Model
   We're going to build a model using a polynomial loss function. Here's what it looks like.
   
-#+BEGIN_SRC ipython :session training :results none
+#+BEGIN_SRC python :session training :results none
 x = numpy.linspace(-5, 5)
 y = 2*x**2 + 3*x + 4
 #+END_SRC
 
-#+BEGIN_SRC ipython :session training :results raw drawer :ipyfile /tmp/polynomial_loss.png
+#+BEGIN_SRC python :session training :results raw drawer :ipyfile ../files/posts/training-a-non-neural-net-model/polynomial_loss.png
 figure = pyplot.figure()
 axe = figure.gca()
 axe.set_title("Loss Function")
@@ -52,10 +53,11 @@ plot = pyplot.plot(x, y)
 
 #+RESULTS:
 :RESULTS:
-# Out[29]:
-[[file:/tmp/polynomial_loss.png]]
+# Out[91]:
+[[file:../files/posts/training-a-non-neural-net-model/polynomial_loss.png]]
 :END:
 
+file:polynomial_loss.png
 ** Setup
    The first thing we will do is setup some variables for the training. The [[https://www.tensorflow.org/programmers_guide/variables][=tensorflow.Variable=]] is a tensor (but not a [[https://www.tensorflow.org/programmers_guide/tensors][=tensorflow.Tensor=]]) whose values can be updated. It maintains its value in between [[https://www.tensorflow.org/api_docs/python/tf/Session][Sessions]] so if you run multiple sessions the value wil carry over to each run. Its constructor takes these arguments.
 
@@ -73,49 +75,131 @@ plot = pyplot.plot(x, y)
 | =import_scope=   | Name scope to add if initializing from a protocol buffer             | None                     |
 | =constraint=     | Optional function to apply after being updated by an Optimizer       | None                     |
 
-First we'll make a trainable variable with an initial value of 0.
-
-#+BEGIN_SRC ipython :session training :results none
-# Define a trainable variable
-x_var = tf.Variable(0., name='XTrainable')
+First we'll make a trainable variable with an initial value of 0. This is what we'll give to the loss function.
+*** Variables
+#+BEGIN_SRC python :session training :results none
+x_variable = tensorflow.Variable(0., name='X')
 #+END_SRC
 
-#+BEGIN_SRC ipython :session training :results none
-# Define an untrainable variable to hold the global step
-step_var = tf.Variable(0, trainable=False)
+Next we'll make an un-trainable variable that holds the count of the number of times the model was trained..
 
+#+BEGIN_SRC python :session training :results none
+step_counter = tensorflow.Variable(0, trainable=False, name="stepCounter")
+#+END_SRC
+*** Loss Function
+    We're going to use the same polynomial that I plotted above but defined using TensorFlow instead of numpy.
+#+BEGIN_SRC python :session training :results none
 # Express loss in terms of the variable
-loss = x_var * x_var - 4.0 * x_var + 5.0
+loss = 2 * x_variable * x_variable - 3.0 * x_variable + 4.0
+#+END_SRC
+*** The Optimizer
+    TensorFlow uses [[https://www.tensorflow.org/api_guides/python/train][=optimizers=]] to train the model. In this case we know there's only one solution to minimize our loss function so we can use [[https://en.wikipedia.org/wiki/Stochastic_gradient_descent][Stochastic Gradient Descent]] which is provided by [[https://www.tensorflow.org/api_docs/python/tf/train/GradientDescentOptimizer][=tensorflow.training.GradientDescentOptimizer=]]. It takes three arguments.
 
-# Find variable value that minimizes loss
-learn_rate = 0.1
-num_epochs = 40
-optimizer = tf.train.GradientDescentOptimizer(learn_rate).minimize(loss, global_step=step_var)
+| Argument      | Description                      |
+|---------------+----------------------------------|
+| learning_rate | How 'fast' it updates its values |
+| use_locking   | If True uses locks when updating |
+| name          | An identifier for debugging      |
+#+BEGIN_SRC python :session training :results none
+learning_rate = 0.1
 
-# Initialize variables
-init = tf.global_variables_initializer()
+optimizer = tensorflow.train.GradientDescentOptimizer(learning_rate, name="GradientDescent")
+#+END_SRC
 
-# Create the saver
-saver = tf.train.Saver()
+After we define the object we have to call the [[https://www.tensorflow.org/api_docs/python/tf/train/Optimizer#minimize][minimize]] function that returns a [[https://www.tensorflow.org/api_docs/python/tf/Operation][=tensorflow.Operation=]] that will update the variable and update our step-counter everytime it's called.
 
-# Create summary data and FileWriter
-summary_op = tf.summary.scalar('x', x_var)
-file_writer = tf.summary.FileWriter('log', graph=tf.get_default_graph())
+#+BEGIN_SRC python :session training :results none
+optimizer_operation = optimizer.minimize(loss, global_step=step_counter)
+#+END_SRC
 
-# Launch session
-with tf.Session() as sess:
-    sess.run(init)
+*** Setup the training session
+    First we have to initialize the variables. There are several ways to do this, the simplest is [[https://www.tensorflow.org/api_docs/python/tf/global_variables_initializer][=tensorflow.global_variables_initializer=]]. This will return a [[https://www.tensorflow.org/api_docs/python/tf/Operation][=tensorflow.Operation=]] that will initialize the variables when passed to the session to run.
+#+BEGIN_SRC python :session training :results none
+init = tensorflow.global_variables_initializer()
+#+END_SRC
 
-    for epoch in range(num_epochs):
-        _, step, result, summary = sess.run([optimizer, step_var, x_var, summary_op])
-        print('Step %d: Computed result = %f' % (step, result))
+We want the variables to be persistent so we start up the [[https://www.tensorflow.org/api_docs/python/tf/train/Saver][=tensorflow.train.Saver=]].
+#+BEGIN_SRC python :session training :results none
+saver = tensorflow.train.Saver()
+#+END_SRC
 
-        # Print summary data
+
+We also want a summary and some logging so we can set that up here. First the summary.
+
+ - [[https://www.tensorflow.org/api_docs/python/tf/summary/scalar][=tensorflow.summary.scalar=]]
+ - [[https://www.tensorflow.org/api_docs/python/tf/summary/FileWriter][=tensorflow.summary.FileWriter=]]
+ - [[https://www.tensorflow.org/api_docs/python/tf/get_default_graph][=tensorflow.get_default_graph=]]
+
+#+BEGIN_SRC python :session training :results none
+summary_operation = tensorflow.summary.scalar('x', x_variable)
+file_writer = tensorflow.summary.FileWriter('log', graph=tensorflow.get_default_graph())
+#+END_SRC
+
+Now the logging.
+#+BEGIN_SRC python :session training :results none
+tensorflow.logging.set_verbosity(tensorflow.logging.INFO)
+#+END_SRC
+
+Finally we get to the training session. We're going to re-train it 50 times (each training run is called an /epoch/).
+
+#+BEGIN_SRC python :session training :results none
+epochs = range(50)
+#+END_SRC
+
+#+BEGIN_SRC python :session training :results output
+results = []
+losses = []
+with tensorflow.Session() as session:
+    session.run(init)
+
+    for epoch in epochs:
+        _, step, result, loss_value, summary = session.run([
+            optimizer_operation,
+            step_counter,
+            x_variable, loss,
+            summary_operation])
+        results.append(result)
+        losses.append(loss_value)
+        tensorflow.logging.log_every_n(tensorflow.logging.INFO,
+                                       'Step %d: Computed result = %f Loss: %f',
+                                       10,
+                                       step,
+                                       result, loss_value)
+
         file_writer.add_summary(summary, global_step=step)
         file_writer.flush()
 
-    # Store variable data
-    saver.save(sess, os.getcwd() + '/output')
-    print('Final x_var: %f' % sess.run(x_var))
-
+    saver.save(session, os.getcwd() + '/output')
+    tensorflow.logging.info('Final X: %f', session.run(x_variable))
 #+END_SRC
+
+#+RESULTS:
+: INFO:tensorflow:Step 1: Computed result = 0.300000 Loss: 4.000000
+: INFO:tensorflow:Step 11: Computed result = 0.747279 Loss: 2.875041
+: INFO:tensorflow:Step 21: Computed result = 0.749984 Loss: 2.875000
+: INFO:tensorflow:Step 31: Computed result = 0.750000 Loss: 2.875000
+: INFO:tensorflow:Step 41: Computed result = 0.750000 Loss: 2.875000
+: INFO:tensorflow:Final X: 0.750000
+
+As you can see from the output, the result was reached fairly quickly.
+
+#+BEGIN_SRC python :session training :results raw drawer :ipyfile ../files/posts/training-a-non-neural-net-model/results.png
+figure = pyplot.figure()
+axe = figure.gca()
+axe.set_title("X Vs Epoch")
+axe.set_ylabel("X")
+axe.set_xlabel("Epoch")
+axe.plot(losses, label="loss")
+plot = axe.plot(results, label="X")
+legend = axe.legend()
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[90]:
+[[file:../files/posts/training-a-non-neural-net-model/results.png]]
+:END:
+
+file:results.png
+
+Judging by the plot it reaches the minimum loss after less than 10 epochs.

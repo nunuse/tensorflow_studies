@@ -107,56 +107,61 @@
             <p class="dateline"><a href="posts/training-a-non-neural-net-model/" rel="bookmark"><time class="published dt-published" datetime="2018-06-01T13:23:09-07:00" title="2018-06-01 13:23">2018-06-01 13:23</time></a></p>
         </div>
     </header><div class="e-content entry-content">
-    <div id="outline-container-orgddb802d" class="outline-2">
-<h2 id="orgddb802d">Imports</h2>
-<div class="outline-text-2" id="text-orgddb802d">
+    <div id="outline-container-org646280d" class="outline-2">
+<h2 id="org646280d">Imports</h2>
+<div class="outline-text-2" id="text-org646280d">
 <p>
-This is the tensorflow style guide recommendation to make the code backwards-compatible with python 2.7. I don't think it makes sense anymore, since python 2 is nearing the for-real-this-time end-of-life date (sometime in 2010). Oh, well.
+This is the tensorflow style guide recommendation to make the code backwards-compatible with python 2.7. I don't think it makes sense here, since I don't use python 0 and python 2 is nearing the for-real-this-time end-of-life date (sometime in 2010) so I don't think I will, but I guess it's a safer practice. Oh, well.
 </p>
-<div class="highlight"><pre><span></span>from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 </pre></div>
 
-<div class="highlight"><pre><span></span># python standard library
-import os
+<div class="highlight"><pre><span></span><span class="c1"># python standard library</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
-# from pypi
-import tensorflow as tf
+<span class="c1"># from pypi</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span>
 
-import matplotlib.pyplot as pyplot
-import numpy
-import seaborn
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">pyplot</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">seaborn</span>
 </pre></div>
 
-<div class="highlight"><pre><span></span>% matplotlib inline
-seaborn.set()
-seaborn.set_style("whitegrid", {"axes.grid": False})
+<div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="n">seaborn</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+<span class="n">seaborn</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">"whitegrid"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"axes.grid"</span><span class="p">:</span> <span class="bp">False</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
 
-<div id="outline-container-org6f31152" class="outline-2">
-<h2 id="org6f31152">A Polynomial Loss Model</h2>
-<div class="outline-text-2" id="text-org6f31152">
+<div id="outline-container-org623b1a8" class="outline-2">
+<h2 id="org623b1a8">A Polynomial Loss Model</h2>
+<div class="outline-text-2" id="text-org623b1a8">
 <p>
 We're going to build a model using a polynomial loss function. Here's what it looks like.
 </p>
 
-<div class="highlight"><pre><span></span>x = numpy.linspace(-5, 5)
-y = 2*x**2 + 3*x + 4
+<div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="mi">4</span>
 </pre></div>
 
-<div class="highlight"><pre><span></span>figure = pyplot.figure()
-axe = figure.gca()
-axe.set_title("Loss Function")
-plot = pyplot.plot(x, y)
+<div class="highlight"><pre><span></span><span class="n">figure</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">axe</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">axe</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Loss Function"</span><span class="p">)</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
+
+
+<div class="figure">
+<p><img src="posts/training-a-non-neural-net-model/polynomial_loss.png" alt="polynomial_loss.png"></p>
 </div>
-
-<div id="outline-container-orgc6b2fd0" class="outline-3">
-<h3 id="orgc6b2fd0">Setup</h3>
-<div class="outline-text-3" id="text-orgc6b2fd0">
+</div>
+<div id="outline-container-org9b7cb1b" class="outline-3">
+<h3 id="org9b7cb1b">Setup</h3>
+<div class="outline-text-3" id="text-org9b7cb1b">
 <p>
 The first thing we will do is setup some variables for the training. The <a href="https://www.tensorflow.org/programmers_guide/variables"><code>tensorflow.Variable</code></a> is a tensor (but not a <a href="https://www.tensorflow.org/programmers_guide/tensors"><code>tensorflow.Tensor</code></a>) whose values can be updated. It maintains its value in between <a href="https://www.tensorflow.org/api_docs/python/tf/Session">Sessions</a> so if you run multiple sessions the value wil carry over to each run. Its constructor takes these arguments.
 </p>
@@ -231,50 +236,172 @@ The first thing we will do is setup some variables for the training. The <a href
 </tbody>
 </table>
 <p>
-First we'll make a trainable variable with an initial value of 0.
+First we'll make a trainable variable with an initial value of 0. This is what we'll give to the loss function.
+</p>
+</div>
+<div id="outline-container-orga123b19" class="outline-4">
+<h4 id="orga123b19">Variables</h4>
+<div class="outline-text-4" id="text-orga123b19">
+<div class="highlight"><pre><span></span><span class="n">x_variable</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'X'</span><span class="p">)</span>
+</pre></div>
+
+<p>
+Next we'll make an un-trainable variable that holds the count of the number of times the model was trained..
 </p>
 
-<div class="highlight"><pre><span></span># Define a trainable variable
-x_var = tf.Variable(0., name='XTrainable')
+<div class="highlight"><pre><span></span><span class="n">step_counter</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">trainable</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"stepCounter"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div id="outline-container-org6ac9baf" class="outline-4">
+<h4 id="org6ac9baf">Loss Function</h4>
+<div class="outline-text-4" id="text-org6ac9baf">
+<p>
+We're going to use the same polynomial that I plotted above but defined using TensorFlow instead of numpy.
+</p>
+<div class="highlight"><pre><span></span><span class="c1"># Express loss in terms of the variable</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x_variable</span> <span class="o">*</span> <span class="n">x_variable</span> <span class="o">-</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">x_variable</span> <span class="o">+</span> <span class="mf">4.0</span>
+</pre></div>
+</div>
+</div>
+<div id="outline-container-org0eeec7b" class="outline-4">
+<h4 id="org0eeec7b">The Optimizer</h4>
+<div class="outline-text-4" id="text-org0eeec7b">
+<p>
+TensorFlow uses <a href="https://www.tensorflow.org/api_guides/python/train"><code>optimizers</code></a> to train the model. In this case we know there's only one solution to minimize our loss function so we can use <a href="https://en.wikipedia.org/wiki/Stochastic_gradient_descent">Stochastic Gradient Descent</a> which is provided by <a href="https://www.tensorflow.org/api_docs/python/tf/train/GradientDescentOptimizer"><code>tensorflow.training.GradientDescentOptimizer</code></a>. It takes three arguments.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<colgroup>
+<col class="org-left">
+<col class="org-left">
+</colgroup>
+<thead><tr>
+<th scope="col" class="org-left">Argument</th>
+<th scope="col" class="org-left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="org-left">learning<sub>rate</sub>
+</td>
+<td class="org-left">How 'fast' it updates its values</td>
+</tr>
+<tr>
+<td class="org-left">use<sub>locking</sub>
+</td>
+<td class="org-left">If True uses locks when updating</td>
+</tr>
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">An identifier for debugging</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"GradientDescent"</span><span class="p">)</span>
 </pre></div>
 
-<div class="highlight"><pre><span></span># Define an untrainable variable to hold the global step
-step_var = tf.Variable(0, trainable=False)
+<p>
+After we define the object we have to call the <a href="https://www.tensorflow.org/api_docs/python/tf/train/Optimizer#minimize">minimize</a> function that returns a <a href="https://www.tensorflow.org/api_docs/python/tf/Operation"><code>tensorflow.Operation</code></a> that will update the variable and update our step-counter everytime it's called.
+</p>
 
-# Express loss in terms of the variable
-loss = x_var * x_var - 4.0 * x_var + 5.0
-
-# Find variable value that minimizes loss
-learn_rate = 0.1
-num_epochs = 40
-optimizer = tf.train.GradientDescentOptimizer(learn_rate).minimize(loss, global_step=step_var)
-
-# Initialize variables
-init = tf.global_variables_initializer()
-
-# Create the saver
-saver = tf.train.Saver()
-
-# Create summary data and FileWriter
-summary_op = tf.summary.scalar('x', x_var)
-file_writer = tf.summary.FileWriter('log', graph=tf.get_default_graph())
-
-# Launch session
-with tf.Session() as sess:
-    sess.run(init)
-
-    for epoch in range(num_epochs):
-	_, step, result, summary = sess.run([optimizer, step_var, x_var, summary_op])
-	print('Step %d: Computed result = %f' % (step, result))
-
-	# Print summary data
-	file_writer.add_summary(summary, global_step=step)
-	file_writer.flush()
-
-    # Store variable data
-    saver.save(sess, os.getcwd() + '/output')
-    print('Final x_var: %f' % sess.run(x_var))
+<div class="highlight"><pre><span></span><span class="n">optimizer_operation</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">global_step</span><span class="o">=</span><span class="n">step_counter</span><span class="p">)</span>
 </pre></div>
+</div>
+</div>
+
+<div id="outline-container-org149b523" class="outline-4">
+<h4 id="org149b523">Setup the training session</h4>
+<div class="outline-text-4" id="text-org149b523">
+<p>
+First we have to initialize the variables. There are several ways to do this, the simplest is <a href="https://www.tensorflow.org/api_docs/python/tf/global_variables_initializer"><code>tensorflow.global_variables_initializer</code></a>. This will return a <a href="https://www.tensorflow.org/api_docs/python/tf/Operation"><code>tensorflow.Operation</code></a> that will initialize the variables when passed to the session to run.
+</p>
+<div class="highlight"><pre><span></span><span class="n">init</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
+</pre></div>
+
+<p>
+We want the variables to be persistent so we start up the <a href="https://www.tensorflow.org/api_docs/python/tf/train/Saver"><code>tensorflow.train.Saver</code></a>.
+</p>
+<div class="highlight"><pre><span></span><span class="n">saver</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+</pre></div>
+
+
+<p>
+We also want a summary and some logging so we can set that up here. First the summary.
+</p>
+
+<ul class="org-ul">
+<li><a href="https://www.tensorflow.org/api_docs/python/tf/summary/scalar"><code>tensorflow.summary.scalar</code></a></li>
+<li><a href="https://www.tensorflow.org/api_docs/python/tf/summary/FileWriter"><code>tensorflow.summary.FileWriter</code></a></li>
+<li><a href="https://www.tensorflow.org/api_docs/python/tf/get_default_graph"><code>tensorflow.get_default_graph</code></a></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">summary_operation</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s1">'x'</span><span class="p">,</span> <span class="n">x_variable</span><span class="p">)</span>
+<span class="n">file_writer</span> <span class="o">=</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">FileWriter</span><span class="p">(</span><span class="s1">'log'</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="n">tensorflow</span><span class="o">.</span><span class="n">get_default_graph</span><span class="p">())</span>
+</pre></div>
+
+<p>
+Now the logging.
+</p>
+<div class="highlight"><pre><span></span><span class="n">tensorflow</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="n">tensorflow</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+</pre></div>
+
+<p>
+Finally we get to the training session. We're going to re-train it 50 times (each training run is called an <i>epoch</i>).
+</p>
+
+<div class="highlight"><pre><span></span><span class="n">epochs</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">with</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">epochs</span><span class="p">:</span>
+	<span class="n">_</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">loss_value</span><span class="p">,</span> <span class="n">summary</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">([</span>
+	    <span class="n">optimizer_operation</span><span class="p">,</span>
+	    <span class="n">step_counter</span><span class="p">,</span>
+	    <span class="n">x_variable</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span>
+	    <span class="n">summary_operation</span><span class="p">])</span>
+	<span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+	<span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss_value</span><span class="p">)</span>
+	<span class="n">tensorflow</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">log_every_n</span><span class="p">(</span><span class="n">tensorflow</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+				       <span class="s1">'Step </span><span class="si">%d</span><span class="s1">: Computed result = </span><span class="si">%f</span><span class="s1"> Loss: </span><span class="si">%f</span><span class="s1">'</span><span class="p">,</span>
+				       <span class="mi">10</span><span class="p">,</span>
+				       <span class="n">step</span><span class="p">,</span>
+				       <span class="n">result</span><span class="p">,</span> <span class="n">loss_value</span><span class="p">)</span>
+
+	<span class="n">file_writer</span><span class="o">.</span><span class="n">add_summary</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">global_step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
+	<span class="n">file_writer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="n">saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">'/output'</span><span class="p">)</span>
+    <span class="n">tensorflow</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Final X: </span><span class="si">%f</span><span class="s1">'</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">x_variable</span><span class="p">))</span>
+</pre></div>
+
+<p>
+As you can see from the output, the result was reached fairly quickly.
+</p>
+
+<div class="highlight"><pre><span></span><span class="n">figure</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">axe</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">axe</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"X Vs Epoch"</span><span class="p">)</span>
+<span class="n">axe</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"X"</span><span class="p">)</span>
+<span class="n">axe</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Epoch"</span><span class="p">)</span>
+<span class="n">axe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">losses</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"loss"</span><span class="p">)</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">axe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"X"</span><span class="p">)</span>
+<span class="n">legend</span> <span class="o">=</span> <span class="n">axe</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="figure">
+<p><img src="posts/training-a-non-neural-net-model/results.png" alt="results.png"></p>
+</div>
+
+<p>
+Judging by the plot it reaches the minimum loss after less than 10 epochs.
+</p>
+</div>
 </div>
 </div>
 </div>
