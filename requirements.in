@@ -1,0 +1,15 @@
+autopep8
+flake8
+jupyter
+Nikola
+pip-tools
+pipdeptree
+seaborn
+sklearn
+tensorflow
+virtualfish
+watchdog
+webassets
+webencodings
+ws4py
+yapf

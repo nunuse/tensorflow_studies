@@ -19,9 +19,17 @@
 # from pypi
 import pandas
 
+import matplotlib.pyplot as pyplot
+import seaborn
+
+from pandas.plotting import scatter_matrix
 from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
+#+END_SRC
+
+#+BEGIN_SRC ipython :session regression :results none
+%matplotlib inline
 #+END_SRC
 
 * The Data
@@ -76,6 +84,7 @@ http://www4.stat.ncsu.edu/~boos/var.select/diabetes.html
 For more information see:
 Bradley Efron, Trevor Hastie, Iain Johnstone and Robert Tibshirani (2004) "Least Angle Regression," Annals of Statistics (with discussion), 407-499.
 (http://web.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf)
+
 #+end_example
 
 I'm going to convert the bunch to a pandas [[https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html][DataFrame]].
@@ -119,4 +128,36 @@ min     25.000000
 max    346.000000  
 #+end_example
 
-So we can see from the data-frame that the feature-names don't exactly match what was in the output (it says =bm= instead of =Body mass index=, for instance).
+So we can see from the data-frame that the feature-names don't exactly match what was in the output (it says =bm= instead of =Body mass index=, for instance), but you get the idea of what's in there. To make it a simple case, I'm only going to use one input variable (=bmi=) so the model will be $y=mx+b$.
+
+#+BEGIN_SRC ipython :session regression :results output
+X = data.bmi
+print(X.describe())
+#+END_SRC
+
+#+RESULTS:
+: count    4.420000e+02
+: mean    -8.013951e-16
+: std      4.761905e-02
+: min     -9.027530e-02
+: 25%     -3.422907e-02
+: 50%     -7.283766e-03
+: 75%      3.124802e-02
+: max      1.705552e-01
+: Name: bmi, dtype: float64
+
+#+BEGIN_SRC ipython :session regression :results raw drawer :ipyfile /tmp/bmi.png
+figure = pyplot.figure(figsize=(20,30))
+axe = figure.gca()
+plots = scatter_matrix(data, ax=axe, diagonal='kde')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[25]:
+[[file:/tmp/bmi.png]]
+:END:
+
+It looks like =bmi= and =s5= are the most corellated with the target of having diabetes. Since BMI is an intuitive factor I'll use that as the one input variable.
+
+
