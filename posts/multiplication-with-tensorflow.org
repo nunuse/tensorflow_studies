@@ -1,0 +1,69 @@
+#+BEGIN_COMMENT
+.. title: Multiplication With TensorFlow
+.. slug: multiplication-with-tensorflow
+.. date: 2018-06-20 11:55:18 UTC-07:00
+.. tags: tensorflow basics mathematics
+.. category: mathematics
+.. link: 
+.. description: How to perform multiplication with TensorFlow.
+.. type: text
+#+END_COMMENT
+
+#+TITLE: Multiplication
+
+This implements the equation /a * b/ as a tensorflow graph.
+
+* Imports
+  For this we just need tensorflow and python's random.
+
+#+BEGIN_SRC ipython :session multiplication :results none
+# python standard library
+import random
+
+# from pypi
+import tensorflow
+#+END_SRC
+
+* Placeholders
+  =Placeholders= are variables that we're going to assign data to later on using a =feed_dict=.
+
+#+BEGIN_SRC ipython :session multiplication :results none
+a = tensorflow.placeholder("float")
+b = tensorflow.placeholder("float")
+#+END_SRC
+
+* The Multiplication
+  We can create our operation either using the =multiply= function or the =*= operator. Using the function isn't as clear, but it lets you add a name and keeps it more consistent with the other operations that don't have a corresponding python operator.
+
+#+BEGIN_SRC ipython :session multiplication :results none
+y = tensorflow.multiply(a, b, name="aTimesB") 
+#+END_SRC
+
+* The Session
+  When you create the tensorflow graph you aren't actually executing the code. To do that you have to create a session which then runs the graph. Since we used =placeholders= we can pass in values to the graph using the =feed_dict= argument which takes the placeholder variables as keys and the data to feed the placeholder as values.
+
+#+BEGIN_SRC ipython :session multiplication :results none
+inputs = [{a:random.randrange(10), b:random.randrange(10)} for datum in range(5)]
+outputs = [data[a] * data[b] for data in inputs]
+#+END_SRC
+
+#+BEGIN_SRC ipython :session multiplication :results output
+with tensorflow.Session() as session:
+    for index, datum in enumerate(inputs):
+        output = session.run(y, feed_dict=datum)
+        assert output == outputs[index]
+        print("{} x {} = {}".format(datum[a], datum[b], outputs[index]))
+#+END_SRC
+
+#+RESULTS:
+: 1 x 9 = 9
+: 6 x 2 = 12
+: 3 x 3 = 9
+: 4 x 5 = 20
+: 9 x 5 = 45
+
+* Conclusion
+  This demonstrated how to perform a multiplication operation with TensorFlow. It showed how to feed data to the placeholders and how to get the numeric output of the operation.
+
+* Source
+  - Lintz N. TensorFlow-Tutorials: Simple tutorials using Google’s TensorFlow Framework [Internet]. 2018 [cited 2018 Jun 20]. Available from: https://github.com/nlintz/TensorFlow-Tutorials

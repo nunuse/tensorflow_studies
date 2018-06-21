@@ -1,0 +1,82 @@
+#+BEGIN_COMMENT
+.. title: Linear Regression
+.. slug: linear-regression
+.. date: 2018-06-20 13:17:31 UTC-07:00
+.. tags: regression basics
+.. category: basics
+.. link: 
+.. description: Simple Linear Regression
+.. type: text
+#+END_COMMENT
+
+* Imports
+#+BEGIN_SRC ipython :session linear :results none
+# python standard library
+import random
+
+# pypi
+import numpy
+import tensorflow
+#+END_SRC
+
+* The Data
+  The input training data will just be an even distribution of numbers from -1 to 1. The target data will be a roughly linear multiple of the input training data with a little random noise added to it.
+
+#+BEGIN_SRC ipython :session linear :results none
+multiplier = random.randrange(2, 5)
+noise_level = random.uniform(0.1, 0.5)
+x_train = numpy.linspace(-1, 1, 101)
+y_train = multiplier * x_train + numpy.random.randn(*x_train.shape) * noise_level
+#+END_SRC
+
+* Placeholders
+  Now we'll create the placeholders to feed the data to.
+
+#+BEGIN_SRC ipython :session linear :results none
+X = tensorflow.placeholder("float", name="X")
+Y = tensorflow.placeholder("float", name="Y")
+#+END_SRC
+
+* The Model
+  The model is just multiplying the weights times the inputs.
+
+#+BEGIN_SRC ipython :session linear :results none
+weights = tensorflow.Variable(0.0, name="weights")
+y_model = tensorflow.multiply(X, weights)
+#+END_SRC
+
+The 'cost' will be the mean-squared error ([[https://www.tensorflow.org/api_docs/python/tf/square][=tensorflow.square=]] is just the square of the input).
+
+#+BEGIN_SRC ipython :session linear :results none
+cost = tensorflow.reduce_mean(tensorflow.square(Y - y_model), name="cost")
+#+END_SRC
+
+* The Optimizer
+  THis uses Gradient Descent to train the model.
+
+#+BEGIN_SRC ipython :session linear :results none
+optimizer = tensorflow.train.GradientDescentOptimizer(0.01).minimize(cost)
+#+END_SRC
+
+* The Session
+
+#+BEGIN_SRC ipython :session linear :results none
+EPOCHS = range(100)
+#+END_SRC
+
+#+BEGIN_SRC ipython :session linear :results output
+with tensorflow.Session() as session:
+    # you need to initialize variables (in this case just variable W)
+    session.run(tensorflow.global_variables_initializer())
+
+    for epoch in EPOCHS:
+        for (x, y) in zip(x_train, y_train):
+            session.run(optimizer, feed_dict={X: x, Y: y})
+
+    print("Weight: {}".format(session.run(weights)))
+    print("Multiplier: {}".format(multiplier))
+#+END_SRC
+
+#+RESULTS:
+: Weight: 3.933319568634033
+: Multiplier: 4
