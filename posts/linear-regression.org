@@ -80,3 +80,8 @@ with tensorflow.Session() as session:
 #+RESULTS:
 : Weight: 3.933319568634033
 : Multiplier: 4
+
+#+BEGIN_SRC ipython :session linear :results raw drawer :ipyfile /tmp/linear_regression.py
+#+END_SRC
+* Source
+  - Lintz N. TensorFlow-Tutorials: Simple tutorials using Google’s TensorFlow Framework [Internet]. 2018 [cited 2018 Jun 20]. Available from: https://github.com/nlintz/TensorFlow-Tutorials
