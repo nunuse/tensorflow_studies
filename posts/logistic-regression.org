@@ -1,0 +1,104 @@
+#+BEGIN_COMMENT
+.. title: Logistic Regression
+.. slug: logistic-regression
+.. date: 2018-06-22 12:25:06 UTC-07:00
+.. tags: regression tutorial
+.. category: regression
+.. link: 
+.. description: A simple logistic regression example.
+.. type: text
+#+END_COMMENT
+
+* Imports
+
+#+BEGIN_SRC ipython :session logistic :results none
+import tensorflow
+import numpy
+from tensorflow.examples.tutorials.mnist import input_data
+#+END_SRC
+
+| tensorflow      | Description                                                            |
+|-----------------+------------------------------------------------------------------------|
+| [[https://www.tensorflow.org/programmers_guide/variables][=Variable=]]      | Persistent tensor to be used by your model                             |
+| [[https://www.tensorflow.org/api_guides/python/constant_op#Random_Tensors][=random_normal=]] | Create a normally-distributed set of values to initialize the variable |
+
+
+* The Model
+#+BEGIN_SRC ipython :session logistic :results none
+def initialize_weights(shape):
+    """Create a variable anda initialize the weights
+
+    Returns:
+     Variable: variable with random normal weights
+    """
+    return tensorflow.Variable(tensorflow.random_normal(shape, stddev=0.01))
+#+END_SRC
+
+This uses the same model as linear regression because there is a baked in cost function which performs softmax and cross entropy.
+
+| tensorflow | Description           |
+|------------+-----------------------|
+| [[https://www.tensorflow.org/api_docs/python/tf/matmul][=matmul=]]   | Matrix Multiplication |
+
+
+[[https://www.python.org/dev/peps/pep-0465/][PEP 465]] added the =@= operator for matrix multiplication which =tensorflow= uses for the =matmul= function.
+
+#+BEGIN_SRC ipython :session logistic :results none
+def model(X, w):
+    """Multiplies X and w
+    
+    Args:
+     X: input variable
+     w: weights
+
+    Returns:
+     tensor: product of X and w
+    """
+    return X @ w
+#+END_SRC
+
+* The Data
+  We're going to use the [[http://yann.lecun.com/exdb/mnist/][MNIST]] data-set which is a collection of images of handwritten digits. It is a subset of a [[https://www.nist.gov/srd/nist-special-database-19][data-set]] created by the [[https://www.nist.gov/][NIST (National Institute of Standards and Technology)]]. the =input_data= module is actually deprecated because they want you to get it from their official [[https://github.com/tensorflow/models][models]] repository, but it works for now.
+
+#+BEGIN_SRC ipython :session logistic :results none
+mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+#+END_SRC
+
+The =mnist= variable is an object with the training and testing data in it. We'll unpack it to make it more like a scipy-style data-set.
+
+#+BEGIN_SRC ipython :session logistic :results none
+x_train, y_train, x_test, y_test = (mnist.train.images,
+                                    mnist.train.labels,
+                                    mnist.test.images,
+                                    mnist.test.labels)
+#+END_SRC
+
+# In[3]:
+
+
+X = tf.placeholder("float", [None, 784]) # create symbolic variables
+Y = tf.placeholder("float", [None, 10])
+
+w = init_weights([784, 10]) # like in linear regression, we need a shared variable weight matrix for logistic regression
+
+py_x = model(X, w)
+
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=py_x, labels=Y)) # compute mean cross entropy (softmax is applied internally)
+train_op = tf.train.GradientDescentOptimizer(0.05).minimize(cost) # construct optimizer
+predict_op = tf.argmax(py_x, 1) # at predict time, evaluate the argmax of the logistic regression
+
+
+# In[ ]:
+
+
+# Launch the graph in a session
+with tf.Session() as sess:
+    # you need to initialize all variables
+    tf.global_variables_initializer().run()
+
+    for i in range(100):
+        for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
+            sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end]})
+        print(i, np.mean(np.argmax(teY, axis=1) ==
+                         sess.run(predict_op, feed_dict={X: teX})))
+
